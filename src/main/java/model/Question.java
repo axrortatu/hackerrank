@@ -1,9 +1,6 @@
 package model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import model.base.BaseModel;
 
 import java.sql.ResultSet;
@@ -13,13 +10,14 @@ import java.sql.SQLException;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Question extends BaseModel {
-Integer id;
-String description;
-int problemId;
-int attachmentId;
-String type;
-int order;
+private Integer id;
+private String description;
+private int problemId;
+private int attachmentId;
+private String type;
+private int order;
 
     public Question(ResultSet resultSet) {
         this.getList(resultSet);

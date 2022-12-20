@@ -14,9 +14,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public abstract class BotUtils implements BotConstants {
-
+public static Scanner numberScan = new Scanner(System.in);
+public static Scanner textScan = new Scanner(System.in);
     public static ReplyKeyboardMarkup buildReplyMarkup(final List<String> menuList, final int column) {
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);

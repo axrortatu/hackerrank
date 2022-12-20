@@ -1,9 +1,6 @@
 package model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import model.base.BaseModel;
 
 import java.sql.ResultSet;
@@ -11,8 +8,9 @@ import java.sql.SQLException;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 @Setter
+@Getter
+@ToString
 public class AttachmentContent extends BaseModel {
     private long id;
     private byte[] content;

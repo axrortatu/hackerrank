@@ -1,9 +1,6 @@
 package model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import model.base.BaseModel;
 
 import java.sql.ResultSet;
@@ -13,6 +10,7 @@ import java.sql.SQLException;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Attachment extends BaseModel {
     private long id;
     private long size;
