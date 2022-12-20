@@ -37,6 +37,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage()) {
+
             Message message = update.getMessage();
             String TEXT = message.getText();
             Long CHAT_ID = message.getChatId();
