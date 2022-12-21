@@ -1,5 +1,6 @@
 package dao;
 
+import model.Attachment;
 import model.Problem;
 
 import java.sql.Connection;
@@ -9,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Attachment extends BaseDatabaseConnection implements BaseDatabase<model.Attachment>{
+public class AttachmentDatabase extends BaseDatabaseConnection implements BaseDatabase<Attachment> {
     @Override
     public boolean addObject(model.Attachment problem) {
         return false;
@@ -19,22 +20,22 @@ public class Attachment extends BaseDatabaseConnection implements BaseDatabase<m
     public List<model.Attachment> getObjectList() {
         return null;
     }
-    public List<model.Attachment> getObjectList(Integer attachmentId) {
 
+    public Attachment getObjectById(Integer attachmentId) {
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("select * from get_attachment(?)")) {
             preparedStatement.setInt(1, attachmentId);
             ResultSet resultSet = preparedStatement.executeQuery();
-            ArrayList<model.Attachment> attachments = new ArrayList<>();
+            Attachment attachment = null;
             while (resultSet.next()) {
-                attachments.add(new model.Attachment(resultSet));
+                attachment = new Attachment(resultSet);
             }
-            return attachments;
+            return attachment;
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return new ArrayList<>();
+        return null;
     }
 }

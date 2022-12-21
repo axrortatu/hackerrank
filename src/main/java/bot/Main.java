@@ -3,10 +3,7 @@ package bot;
 import bot.utils.BotUtils;
 import common.Pair;
 import dao.*;
-import model.AttachmentContent;
-import model.Difficulty;
-import model.Problem;
-import model.Question;
+import model.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -17,8 +14,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +51,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals(TOPIC)) {
-
                 InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(
                         new ArrayList<>(new TopicDatabase().getObjectList()), 2);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
@@ -82,73 +76,39 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         new Pair<>(Difficulty.ALL, topicId)
                 ), 2);
                 EditMessageText editMessageText = BotUtils.buildEditMessage(
-                        messageId,
                         chatId,
                         "select one type of problem",
+                        messageId,
                         inlineKeyboardMarkup
                 );
                 botExecute(MessageType.EDIT_MESSAGE, editMessageText);
             } else if (isProblem(callBackData)) {
                 pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
-                test(chatId, messageId,true);
+                test(chatId, messageId, true);
                 BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
             } else if (isPrevOrNext(callBackData)) {
                 if (callBackData.startsWith(PREV)) {
                     test(chatId, messageId, true);
-                }else{
+                } else {
                     test(chatId, messageId, false);
                 }
-            } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId)!=null&&BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
-                sendQuestionContent(chatId, callBackData);
+            } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null && BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
+                Pair<String, InputFile> pair = getAttachment(callBackData);
+                SendPhoto sendPhoto = BotUtils.buildSendPhoto(
+                        chatId,
+                        pair.getKey(),
+                        pair.getValue()
+                );
+                botExecute(MessageType.SEND_PHOTO,sendPhoto);
             }
-
-
         }
     }
 
-    private void sendQuestionContent(Long chatId, String data) {
-        List<Question> questions = new QuestionDatabase().getObjectList(Integer.valueOf(data));
-
-        for (Question question : questions) {
-            List<model.Attachment> attachments = new Attachment().getObjectList(question.getAttachmentId());
-            model.Attachment attachment = attachments.get(0);
-            List<AttachmentContent> attachmentContents = new AttachmentContant().getObjectList((int) attachment.getAttachmentId());
-            AttachmentContent attachmentContent = attachmentContents.get(0);
-
-            String description = question.getDescription();
-            byte[] contentByte = attachmentContent.getContent();
-
-            if (contentByte!=null){
-                try (FileOutputStream outputStream = new FileOutputStream("src/image.jpg")) {
-
-                    outputStream.write(contentByte);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                ByteArrayInputStream inputStream=new ByteArrayInputStream(contentByte);
-                InputFile inputFile = new InputFile(inputStream, "src/image.jpg");
-                SendPhoto sendPhoto = new SendPhoto(String.valueOf(chatId), inputFile);
-                botExecute(MessageType.SEND_PHOTO, sendPhoto);
-            }
-
-
-
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(chatId);
-            sendMessage.setText(description);
-            botExecute(MessageType.SEND_MESSAGE, sendMessage);
-
-        }
-
-
-
-    }
 
     private void botExecute(MessageType messageType, Object object) {
         try {
             switch (messageType) {
+                case SEND_PHOTO -> execute((SendPhoto) object);
                 case SEND_MESSAGE -> execute((SendMessage) object);
                 case EDIT_MESSAGE -> execute((EditMessageText) object);
                 case DELETE_MESSAGE -> execute((DeleteMessage) object);
@@ -167,11 +127,11 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
         int page = Integer.parseInt(pageNumber);
 
-        if (isPrev && page > 1){
-            page --;
+        if (isPrev && page > 1) {
+            page--;
         }
-        if (!isPrev){
-            page ++;
+        if (!isPrev) {
+            page++;
         }
 
         ProblemDatabase problemDatabase = new ProblemDatabase();
@@ -184,16 +144,45 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
         InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(new ArrayList<>(problemList), 3);
         EditMessageText editMessageText = BotUtils.buildEditMessage(
-                messageId,
                 chatId,
                 problemListInfo,
+                messageId,
                 inlineKeyboardMarkup
         );
 
 
-
         pageNumberList.put(chatId, (PREV + SEPARATOR + topicId + SEPARATOR + difficulty + SEPARATOR + page));
         botExecute(MessageType.EDIT_MESSAGE, editMessageText);
+    }
+
+
+    private Pair<String, InputFile> getAttachment(final String problemId) {
+        final List<Question> questions = new QuestionDatabase().getObjectList(Integer.valueOf(problemId));
+
+        InputFile inputFile = null;
+        String decription = null;
+
+        for (Question question : questions) {
+            if (question.getType().equals(IMAGE)) {
+                Attachment attachment = new AttachmentDatabase().getObjectById(question.getAttachmentId());
+                AttachmentContent attachmentContent = new AttachmentContantDatabase().getObjectById((int) attachment.getAttachmentId());
+                byte[] contentByte = attachmentContent.getContent();
+
+                if (contentByte != null) {
+                    try (FileOutputStream outputStream = new FileOutputStream("src/image.jpg")) {
+                        outputStream.write(contentByte);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(contentByte);
+                    inputFile = new InputFile(inputStream, "src/image.jpg");
+                }
+            } else if (question.getType().equals(TEXT)) {
+                decription = question.getDescription();
+            }
+        }
+
+        return new Pair<>(decription, inputFile);
     }
 
 

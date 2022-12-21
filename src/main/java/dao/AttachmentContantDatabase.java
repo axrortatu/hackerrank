@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AttachmentContant extends BaseDatabaseConnection implements BaseDatabase<model.AttachmentContent>{
+public class AttachmentContantDatabase extends BaseDatabaseConnection implements BaseDatabase<model.AttachmentContent> {
     @Override
     public boolean addObject(AttachmentContent problem) {
         return false;
@@ -21,22 +21,23 @@ public class AttachmentContant extends BaseDatabaseConnection implements BaseDat
     public List<AttachmentContent> getObjectList() {
         return null;
     }
-    public List<AttachmentContent> getObjectList(Integer attachmentContentId) {
+
+    public AttachmentContent getObjectById(Integer attachmentContentId) {
 
         try (Connection connection = getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement("select * from get_attachment_content(?)")) {
 
             preparedStatement.setInt(1, attachmentContentId);
             ResultSet resultSet = preparedStatement.executeQuery();
-            ArrayList<AttachmentContent> attachmentContents = new ArrayList<>();
+            AttachmentContent attachmentContent = null;
             while (resultSet.next()) {
-                attachmentContents.add(new AttachmentContent(resultSet));
+                attachmentContent = new AttachmentContent(resultSet);
             }
-            return attachmentContents;
+            return attachmentContent;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return new ArrayList<>();
+        return null;
     }
 }
 

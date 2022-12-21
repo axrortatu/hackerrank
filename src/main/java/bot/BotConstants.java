@@ -29,8 +29,11 @@ public interface BotConstants {
     String NEXT = "⏭";
     String PREV = "⏮";
 
+    String TEXT = "TEXT";
+    String IMAGE = "IMAGE";
+
     HashMap<Long, String> USER_STATUS = new HashMap<>();
-    HashMap<Long,String> ADMIN_SEND_QUESTION_CONTENT = new HashMap<>();
+    HashMap<Long, String> ADMIN_SEND_QUESTION_CONTENT = new HashMap<>();
     String ADMIN_SEND_QUESTION = "ADMIN_SEND_QUESTION";
 
 
@@ -41,6 +44,7 @@ public interface BotConstants {
     default boolean isProblem(final String callBackData) {
         return callBackData.startsWith(PROBLEM);
     }
+
     default boolean isPrevOrNext(final String callBackData) {
         return callBackData.startsWith(PREV) || callBackData.startsWith(NEXT);
     }
