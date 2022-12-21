@@ -1,6 +1,5 @@
 package dao;
 
-<<<<<<<<< Temporary merge branch 1
 import model.Attachment;
 import model.Problem;
 
@@ -8,26 +7,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+
+
 
 public class AttachmentDatabase extends BaseDatabaseConnection implements BaseDatabase<Attachment> {
-    @Override
-    public boolean addObject(model.Attachment problem) {
-=========
-import model.Problem;
 
-import java.util.List;
 
-public class AttachmentDatabase extends BaseDatabaseConnection implements BaseDatabase<Problem>{
     @Override
-    public boolean addObject(Problem problem) {
->>>>>>>>> Temporary merge branch 2
+    public boolean addObject(Attachment attachment) {
         return false;
     }
 
     @Override
-<<<<<<<<< Temporary merge branch 1
     public List<model.Attachment> getObjectList() {
         return null;
     }
@@ -46,10 +38,7 @@ public class AttachmentDatabase extends BaseDatabaseConnection implements BaseDa
         } catch (SQLException e) {
             e.printStackTrace();
         }
+return null;
 
-=========
-    public List<Problem> getObjectList() {
->>>>>>>>> Temporary merge branch 2
-        return null;
     }
 }

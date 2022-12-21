@@ -1,22 +1,12 @@
 import botjson.BotUserJson;
 import bot.utils.BotUtils;
-<<<<<<<<< Temporary merge branch 1
-=========
 import bot.utils.FilesUtil;
->>>>>>>>> Temporary merge branch 2
 import dao.QuestionDatabase;
 import dao.TopicDatabase;
 import model.*;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-
-<<<<<<<<< Temporary merge branch 1
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-=========
->>>>>>>>> Temporary merge branch 2
 import java.util.Scanner;
 
 public class Main {
@@ -56,31 +46,14 @@ public class Main {
                     int number = BotUtils.numberScan.nextInt();
                     if (number == 1) {
                         question.setType("IMAGE");
-                            System.out.println("File urlini kiriting:  ");
-                            String file = BotUtils.textScan.nextLine();
-                            System.out.println("Fileni nomini kiriting: ");
-                            attachment.setFileName(BotUtils.textScan.nextLine());
-<<<<<<<<< Temporary merge branch 1
-                            FileInputStream fileInputStream = new FileInputStream(file + "/" + attachment.getFileName());
-                            byte[] bytes = fileInputStream.readAllBytes();
-                            attachmentContent.setContent(bytes);
-                            File file1 = new File(file + "/" + attachment.getFileName());
-                            attachment.setSize(file1.getFreeSpace());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-
-                    } else if (number == 2) {
-                        question.setType("TEXT");
-=========
-                            attachmentContent.setContent(FilesUtil.sendBytes(attachment.getFileName(),file));
-
-                           attachment.setSize(attachmentContent.getContent().length/1024);
-                        System.out.println(attachmentContent.getContent().length);
-                    }
-                    else if(number == 2){
+                        System.out.println("File urlini kiriting: ");
+                        String file = BotUtils.textScan.nextLine();
+                        System.out.println("Fileni nomini kiriting: ");
+                        attachment.setFileName(BotUtils.textScan.nextLine());
+                        attachmentContent.setContent(FilesUtil.getBytes(attachment.getFileName(),file));
+                        attachment.setSize(attachmentContent.getContent().length/1024);
+                    } else if(number == 2){
                         question.setType( "TEXT");
->>>>>>>>> Temporary merge branch 2
                         System.out.println("Savolni matini  kiriting: ");
                         question.setDescription(BotUtils.textScan.nextLine());
                     } else {
