@@ -7,8 +7,8 @@ import java.util.HashMap;
 
 
 public interface BotConstants {
-    String USERNAME = "https://t.me/solve_quiz_bot";
-    String BOT_TOKEN = "5973793592:AAHC__sbY1nZKQh7qQTwJJpTDLWk1xvtrjI";
+    String USERNAME = "https://t.me/hackerrank_project_bot";
+    String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
 
     String EASY = "easy";
     String MEDIUM = "medium";
@@ -42,7 +42,8 @@ public interface BotConstants {
     HashMap<Long, String> USER_STATUS = new HashMap<>();
     HashMap<Long, String> ADMIN_SEND_QUESTION_CONTENT = new HashMap<>();
     String ADMIN_SEND_QUESTION = "ADMIN_SEND_QUESTION";
-    String SEND_CONTACT = "SHARE CONTACT";
+    String SEND_CONTACT = "share_contact";
+    String SHARE_CONTACT = "SHARE CONTACT";
 
     default boolean isTopic(final String callBackData ) {
         return callBackData.startsWith(TOPIC);
