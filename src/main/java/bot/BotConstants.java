@@ -20,8 +20,8 @@ public interface BotConstants {
     String PREPARATION = "preparation";
     String SELECT_TOPIC = "SELECT_TOPIC";
 
-    String SOLVED = " SOLVED";
-    String NOT_RESOLVED = " NOT RESOLVED";
+    String SOLVED = " ✅SOLVED";
+    String NOT_RESOLVED = " ❌NOT RESOLVED";
 
     int OBJECTID = 1;
     int DIFFICULTY = 2;
