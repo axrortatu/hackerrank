@@ -18,10 +18,10 @@ public class BotDifficultyLanguange {
 
 
     public String[] getThemeType(Long CHAT_ID){
-        if (botLang.getLanguangeName(CHAT_ID) == "ENG"){
+        if (botLang.getLanguangeName(CHAT_ID).equals("ENG")){
             themeType = new String[]{"topic", "preparation", "back"};
         }
-        else if (botLang.getLanguangeName(CHAT_ID) == "UZB") {
+        else if (botLang.getLanguangeName(CHAT_ID).equals("UZB")) {
             themeType = new String[]{"mavzu", "mavzu malumotlari", "orqaga"};
         }
         else {
@@ -33,10 +33,10 @@ public class BotDifficultyLanguange {
 
     public String[] getDifficultyType(Long CHAT_ID){
 
-        if (botLang.getLanguangeName(CHAT_ID) == "ENG"){
+        if (botLang.getLanguangeName( CHAT_ID).equals("ENG")){
             difficultyLang = new String[]{"EASY", "MEDIUM", "HARD", "ALL"};
         }
-        else if (botLang.getLanguangeName(CHAT_ID) == "UZB") {
+        else if (botLang.getLanguangeName( CHAT_ID).equals("UZB")) {
             difficultyLang = new String[]{"OSON", "O'RTA", "QIYIN", "HAMMASI"};
         }
         else {

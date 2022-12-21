@@ -10,6 +10,7 @@ import model.Question;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
@@ -42,4 +43,16 @@ public class FilesUtil {
         }
         return new Pair<>(decription, inputFile);
     }
+
+    public static byte[] getBytes(String fileName, String fileUrl) {
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(fileUrl + "/" + fileName);
+            return fileInputStream.readAllBytes();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
+

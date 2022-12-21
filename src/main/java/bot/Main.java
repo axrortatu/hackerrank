@@ -97,8 +97,8 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
             else if (TEXT.equals(botDifLang.getThemeType(CHAT_ID)[0])) {
                 String str = "";
-                if (languange.getLanguangeName(CHAT_ID) == "ENG") str = "Select topics !";
-                else if (languange.getLanguangeName(CHAT_ID) == "UZB") str = "Mavzularni tanlang !";
+                if (languange.getLanguangeName(CHAT_ID).equals("ENG")) str = "Select topics !";
+                else if (languange.getLanguangeName(CHAT_ID).equals("UZB")) str = "Mavzularni tanlang !";
                 else str = "Выберите темы !";
 
                 InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(
@@ -128,8 +128,8 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 ), 2);
                 EditMessageText editMessageText = BotUtils.buildEditMessage(
                         chatId,
-                        languange.getLanguangeName(chatId) == "ENG" ? "Select one type of problem" :
-                                languange.getLanguangeName(chatId) == "UZB" ? "Muammoning bir turini tanlang" :
+                        languange.getLanguangeName(chatId).equals("ENG") ? "Select one type of problem" :
+                                languange.getLanguangeName(chatId).equals("UZB") ? "Muammoning bir turini tanlang" :
                                         "Bыберите один тип проблемы ",
                         messageId,
                         inlineKeyboardMarkup
