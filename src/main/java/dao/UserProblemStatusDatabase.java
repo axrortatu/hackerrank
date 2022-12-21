@@ -20,7 +20,7 @@ public class UserProblemStatusDatabase extends BaseDatabaseConnection implements
         Pair<String, String> pair = new Pair<>();
 //        i_user_id bigint, i_problem integer
         pair.put("i_telegram_chat_id := ", String.valueOf(userProblemStatus.getTelegram_chat_id()));
-        pair.put("i_problem_id", String.valueOf(userProblemStatus.getProblemId()));
+        pair.put("i_problem_id := ", String.valueOf(userProblemStatus.getProblemId()));
 
         try {
             connection =  getConnection();
