@@ -5,7 +5,9 @@ import common.Pair;
 import model.Problem;
 import model.Topic;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -17,8 +19,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public abstract class BotUtils implements BotConstants {
-public static Scanner numberScan = new Scanner(System.in);
-public static Scanner textScan = new Scanner(System.in);
+    public static Scanner numberScan = new Scanner(System.in);
+    public static Scanner textScan = new Scanner(System.in);
+
     public static ReplyKeyboardMarkup buildReplyMarkup(final List<String> menuList, final int column) {
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
@@ -58,7 +61,7 @@ public static Scanner textScan = new Scanner(System.in);
         return sendMessage;
     }
 
-    public static EditMessageText buildEditMessage(Integer messageId, Long chatId, String text, InlineKeyboardMarkup i) {
+    public static EditMessageText buildEditMessage(Long chatId, String text, Integer messageId, InlineKeyboardMarkup i) {
         EditMessageText editMessage = new EditMessageText(text);
         editMessage.setMessageId(messageId);
         editMessage.setChatId(chatId);
@@ -66,6 +69,12 @@ public static Scanner textScan = new Scanner(System.in);
             editMessage.setReplyMarkup(i);
         }
         return editMessage;
+    }
+
+    public static SendPhoto buildSendPhoto(Long chatId, String captionText, InputFile inputFile){
+        SendPhoto sendPhoto  = new SendPhoto(chatId.toString(), inputFile);
+        sendPhoto.setCaption(captionText);
+        return sendPhoto;
     }
 
     private static List<List<InlineKeyboardButton>> getInlineKeyboardRowList(List<Object> objectList, int column) {

@@ -31,7 +31,7 @@ private int order;
             this.problemId = resultSet.getInt("problem_id");
             this.attachmentId =  resultSet.getInt("attachment_id");
             this.type = resultSet.getString("type");
-            this.order = resultSet.getInt("order");
+            this.order = resultSet.getInt("orders");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
