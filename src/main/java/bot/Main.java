@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class Main extends TelegramLongPollingBot implements BotConstants {
 
     BotLanguange languange = new BotLanguange();
@@ -107,7 +106,21 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         CHAT_ID,
                         str,
                         inlineKeyboardMarkup,
-                        null
+                        BotUtils.buildReplyMarkup(List.of(SOLVED, UNSOLVED),1)
+                );
+                botExecute(MessageType.SEND_MESSAGE, sendMessage);
+            } else if (TEXT.equals(SOLVED)) {
+                ProblemDatabase problemDatabase = new ProblemDatabase();
+                SendMessage sendMessage = BotUtils.buildSendMessage(
+                        CHAT_ID,problemDatabase.getSolvedProblems(100L),
+                        null,null
+                );
+                botExecute(MessageType.SEND_MESSAGE, sendMessage);
+            }else if (TEXT.equals(UNSOLVED)) {
+                ProblemDatabase problemDatabase = new ProblemDatabase();
+                SendMessage sendMessage = BotUtils.buildSendMessage(
+                        CHAT_ID,problemDatabase.getUnsolvedProblems(100L),
+                        null,null
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
@@ -157,9 +170,9 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 );
                 botExecute(MessageType.SEND_PHOTO,sendPhoto);
             }
+
         }
     }
-
 
     private void botExecute(MessageType messageType, Object object) {
         try {

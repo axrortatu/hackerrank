@@ -76,4 +76,56 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
 
         return stringBuilder.toString();
     }
+    public String getSolvedProblems(Long chat_id){
+        List<Problem> problemList = getSolved(chat_id);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < problemList.size(); i++) {
+            stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append("\n");
+        }
+        return stringBuilder.toString();
+    }
+    private List<Problem> getSolved(Long chatId){
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement("select * from get_user_problem_status(?)");
+            preparedStatement.setLong(1,chatId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ArrayList<Problem> problems = new ArrayList<>();
+            while(resultSet.next()){
+                problems.add(new Problem(resultSet));
+            }
+            return problems;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private List<Problem> getUnsolved(Long chatId){
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement("select * from get_user_problem_status_unsolved(?)");
+            preparedStatement.setLong(1,chatId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ArrayList<Problem> problems = new ArrayList<>();
+            while(resultSet.next()){
+                problems.add(new Problem(resultSet));
+            }
+            return problems;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public String getUnsolvedProblems(Long chat_id){
+        List<Problem> problemList = getUnsolved(chat_id);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < problemList.size(); i++) {
+            stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append("\n");
+        }
+        return stringBuilder.toString();
+    }
 }

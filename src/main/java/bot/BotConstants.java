@@ -5,9 +5,8 @@ import model.Difficulty;
 
 import java.util.HashMap;
 
-
 public interface BotConstants {
-    String USERNAME = "https://t.me/hackerrank_project_bot";
+    String USERNAME = "@hackerrank_project_bot";
     String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
 
     String EASY = "easy";
@@ -16,11 +15,7 @@ public interface BotConstants {
     String ALL = "all";
 
 
-
-
     String START = "/start";
-
-
     String TOPIC = "topic";
     String PROBLEM = "problem";
     String BACK = " back ";
@@ -35,6 +30,8 @@ public interface BotConstants {
 
     String NEXT = "⏭";
     String PREV = "⏮";
+    String SOLVED = "Solved";
+    String UNSOLVED = "Unsolved";
 
     String TEXT = "TEXT";
     String IMAGE = "IMAGE";
@@ -47,11 +44,9 @@ public interface BotConstants {
         return callBackData.startsWith(TOPIC);
     }
 
-
     default boolean isProblem(final String callBackData) {
         return callBackData.startsWith(PROBLEM);
     }
-
     default boolean isPrevOrNext(final String callBackData) {
         return callBackData.startsWith(PREV) || callBackData.startsWith(NEXT);
     }
