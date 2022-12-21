@@ -9,10 +9,14 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Contact;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -47,6 +51,36 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             Message message = update.getMessage();
             String TEXT = message.getText();
             Long CHAT_ID = message.getChatId();
+
+
+            if(BotUtils.USER_STATUS.containsKey(CHAT_ID)){
+
+                String value = BotUtils.USER_STATUS.get(CHAT_ID);
+                if(value.equals(BotConstants.SEND_CONTACT)){
+
+                    if (message.hasContact()){
+
+                        Contact contact = message.getContact();
+                        User user = new User();
+                        user.setName(contact.getFirstName()+
+                                ((contact.getLastName()!=null)?"  "+contact.getLastName():""));
+                        user.setEmail(null);
+                        user.setPassword(null);
+                        user.setChatId(message.getChatId());
+                        user.setAttachmentId(0);
+                        new UserDatabase().addObject(user);
+
+                        BotUtils.USER_STATUS.remove(message.getChatId());
+
+                    } else {
+
+                    }
+
+                }
+
+            }
+
+
 
             if (TEXT.equals(START)) {
 
@@ -145,7 +179,14 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 } else {
                     test(chatId, messageId, false);
                 }
-            } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null && BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
+            } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null &&
+                    BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
+
+                User user = new UserDatabase().getUserByID(callBackMessage.getChatId());
+                if (user == null){
+                    shareContact(callBackMessage.getChatId());
+                }
+
                 Pair<String, InputFile> pair = getAttachment(callBackData);
                 SendPhoto sendPhoto = BotUtils.buildSendPhoto(
                         chatId,
@@ -155,6 +196,21 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 botExecute(MessageType.SEND_PHOTO,sendPhoto);
             }
         }
+    }
+
+    private void shareContact(Long chatId) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText("Please share your Contact as a log in method to use bot!");
+        KeyboardButton button = new KeyboardButton();
+        button.setText(BotConstants.SEND_CONTACT);
+        button.setRequestContact(true);
+        KeyboardRow row = new KeyboardRow();
+        row.add(button);
+        ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup(new ArrayList<>(List.of(row)));
+        sendMessage.setReplyMarkup(markup);
+        botExecute(MessageType.SEND_MESSAGE,sendMessage);
+        BotUtils.USER_STATUS.put(chatId,BotUtils.SHARE_CONTACT);
     }
 
 

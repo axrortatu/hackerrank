@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public abstract class BotUtils implements BotConstants {
+    public static final String SHARE_CONTACT = "share_contact";
     public static Scanner numberScan = new Scanner(System.in);
     public static Scanner textScan = new Scanner(System.in);
 
