@@ -54,7 +54,21 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         CHAT_ID,
                         "select topics",
                         inlineKeyboardMarkup,
-                        null
+                        BotUtils.buildReplyMarkup(List.of(SOLVED, UNSOLVED),1)
+                );
+                botExecute(MessageType.SEND_MESSAGE, sendMessage);
+            } else if (TEXT.equals(SOLVED)) {
+                ProblemDatabase problemDatabase = new ProblemDatabase();
+                SendMessage sendMessage = BotUtils.buildSendMessage(
+                        CHAT_ID,problemDatabase.getSolvedProblems(100L),
+                        null,null
+                );
+                botExecute(MessageType.SEND_MESSAGE, sendMessage);
+            }else if (TEXT.equals(UNSOLVED)) {
+                ProblemDatabase problemDatabase = new ProblemDatabase();
+                SendMessage sendMessage = BotUtils.buildSendMessage(
+                        CHAT_ID,problemDatabase.getUnsolvedProblems(100L),
+                        null,null
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
@@ -91,6 +105,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             }
 
         }
+
     }
 
     private void botExecute(MessageType messageType, Object object) {
@@ -142,6 +157,5 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         pageNumberList.put(chatId, (PREV + SEPARATOR + topicId + SEPARATOR + difficulty + SEPARATOR + page));
         botExecute(MessageType.EDIT_MESSAGE, editMessageText);
     }
-
 
 }
