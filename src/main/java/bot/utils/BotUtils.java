@@ -117,6 +117,37 @@ public abstract class BotUtils implements BotConstants {
         }
         return list;
     }
-
-
+    public static List<List<InlineKeyboardButton>> getInlineKeyboardRowListOfTopic(List<Object> objectList, int column) {
+        List<List<InlineKeyboardButton>> list = new ArrayList<>();
+        List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        int index = 0;
+        for (Object o : objectList) {
+            if(o instanceof Topic topic){
+                InlineKeyboardButton button = new InlineKeyboardButton();
+                button.setText(String.valueOf(index + 1));
+                button.setCallbackData(TOPIC_ID + SEPARATOR + topic.getId());
+                inlineKeyboardButtons.add(button);
+            }
+            if ((index + 1) % column == 0) {
+                list.add(inlineKeyboardButtons);
+                inlineKeyboardButtons = new ArrayList<>();
+            }
+            index++;
+        }
+        if (!inlineKeyboardButtons.isEmpty()) {
+            list.add(inlineKeyboardButtons);
+        }
+        return list;
+    }
+    public static InlineKeyboardMarkup getInlineKeyboardMarkup(String topicId) {
+        List<List<InlineKeyboardButton>> list = new ArrayList<>();
+        List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(BotConstants.CONTINUE);
+        button.setCallbackData(TOPIC + topicId);
+        inlineKeyboardButtons.add(button);
+        list.add(inlineKeyboardButtons);
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(list);
+        return inlineKeyboardMarkup;
+    }
 }

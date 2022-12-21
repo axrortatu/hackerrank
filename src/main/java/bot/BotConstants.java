@@ -1,12 +1,10 @@
 package bot;
 
-import model.Difficulty;
-
 import java.util.HashMap;
 
 public interface BotConstants {
-    String USERNAME = "@hackerrank_project_bot";
-    String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
+    String USERNAME = "t.me/mypdpbot";
+    String BOT_TOKEN = "5521074437:AAGUFYPjqzZ54I2ivcSE_qm2LLDnYo1vLoo";
 
     String EASY = "easy";
     String MEDIUM = "medium";
@@ -16,9 +14,12 @@ public interface BotConstants {
 
     String START = "/start";
     String TOPIC = "topic";
+    String TOPIC_ID = "TopicId";
     String PROBLEM = "problem";
     String PREPARATION = "preparation";
     String SELECT_TOPIC = "SELECT_TOPIC";
+
+    String CONTINUE = "Continue preparation";
 
     int OBJECTID = 1;
     int DIFFICULTY = 2;
@@ -40,5 +41,9 @@ public interface BotConstants {
     }
     default boolean isPrevOrNext(final String callBackData) {
         return callBackData.startsWith(PREV) || callBackData.startsWith(NEXT);
+    }
+
+    default boolean isTopicId(String callBackData) {
+        return callBackData.startsWith(TOPIC_ID);
     }
 }

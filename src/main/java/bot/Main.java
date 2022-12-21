@@ -4,6 +4,7 @@ import bot.utils.BotUtils;
 import common.Pair;
 import dao.ProblemDatabase;
 import dao.TopicDatabase;
+import dao.UserPreparationDataBase;
 import model.Difficulty;
 import model.Problem;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -13,11 +14,9 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Main extends TelegramLongPollingBot implements BotConstants {
 
@@ -57,6 +56,11 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         null
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
+            } else if (TEXT.equals(PREPARATION)) {
+                InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(
+                        BotUtils.getInlineKeyboardRowListOfTopic(new ArrayList<>(new TopicDatabase().getObjectList()), 3));
+                SendMessage sendMessage = BotUtils.buildSendMessage(CHAT_ID, new TopicDatabase().getTopics(), inlineKeyboardMarkup,null);
+                botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
         } else if (update.hasCallbackQuery()) {
             String callBackData = update.getCallbackQuery().getData();
@@ -88,8 +92,14 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 }else{
                     test(chatId, messageId, false);
                 }
+            } else if (isTopicId(callBackData)) {
+                String[] split = callBackData.split(SEPARATOR);
+                String topicId = split[OBJECTID];
+                String userPreparation = new UserPreparationDataBase().getUserPreparation(chatId, Integer.parseInt(topicId));
+                InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.getInlineKeyboardMarkup(topicId);
+                EditMessageText editMessageText = BotUtils.buildEditMessage(messageId, chatId, userPreparation,inlineKeyboardMarkup);
+                botExecute(MessageType.EDIT_MESSAGE,editMessageText);
             }
-
         }
     }
 
@@ -128,7 +138,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 Difficulty.valueOf(difficulty),
                 page);
 
-
         InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(new ArrayList<>(problemList), 3);
         EditMessageText editMessageText = BotUtils.buildEditMessage(
                 messageId,
@@ -136,8 +145,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 problemListInfo,
                 inlineKeyboardMarkup
         );
-
-
 
         pageNumberList.put(chatId, (PREV + SEPARATOR + topicId + SEPARATOR + difficulty + SEPARATOR + page));
         botExecute(MessageType.EDIT_MESSAGE, editMessageText);
