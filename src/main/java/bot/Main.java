@@ -2,18 +2,19 @@ package bot;
 
 import bot.utils.BotUtils;
 import common.Pair;
-import dao.ProblemDatabase;
-import dao.TopicDatabase;
-import model.Difficulty;
-import model.Problem;
+import dao.*;
+import model.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage()) {
+
             Message message = update.getMessage();
             String TEXT = message.getText();
             Long CHAT_ID = message.getChatId();
@@ -125,25 +127,33 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         new Pair<>(botDifLang.getDifficultyType(chatId)[3], topicId)
                 ), 2);
                 EditMessageText editMessageText = BotUtils.buildEditMessage(
-                        messageId,
                         chatId,
                         languange.getLanguangeName(chatId) == "ENG" ? "Select one type of problem" :
                                 languange.getLanguangeName(chatId) == "UZB" ? "Muammoning bir turini tanlang" :
                                         "Bыберите один тип проблемы ",
+                        messageId,
                         inlineKeyboardMarkup
                 );
                 botExecute(MessageType.EDIT_MESSAGE, editMessageText);
             } else if (isProblem(callBackData)) {
                 pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
-                test(chatId, messageId,true);
+                test(chatId, messageId, true);
+                BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
             } else if (isPrevOrNext(callBackData)) {
                 if (callBackData.startsWith(PREV)) {
                     test(chatId, messageId, true);
-                }else{
+                } else {
                     test(chatId, messageId, false);
                 }
+            } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null && BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
+                Pair<String, InputFile> pair = getAttachment(callBackData);
+                SendPhoto sendPhoto = BotUtils.buildSendPhoto(
+                        chatId,
+                        pair.getKey(),
+                        pair.getValue()
+                );
+                botExecute(MessageType.SEND_PHOTO,sendPhoto);
             }
-
         }
     }
 
@@ -151,6 +161,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
     private void botExecute(MessageType messageType, Object object) {
         try {
             switch (messageType) {
+                case SEND_PHOTO -> execute((SendPhoto) object);
                 case SEND_MESSAGE -> execute((SendMessage) object);
                 case EDIT_MESSAGE -> execute((EditMessageText) object);
                 case DELETE_MESSAGE -> execute((DeleteMessage) object);
@@ -169,11 +180,11 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
         int page = Integer.parseInt(pageNumber);
 
-        if (isPrev && page > 1){
-            page --;
+        if (isPrev && page > 1) {
+            page--;
         }
-        if (!isPrev){
-            page ++;
+        if (!isPrev) {
+            page++;
         }
 
         ProblemDatabase problemDatabase = new ProblemDatabase();
@@ -186,16 +197,45 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
         InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(new ArrayList<>(problemList), 3);
         EditMessageText editMessageText = BotUtils.buildEditMessage(
-                messageId,
                 chatId,
                 problemListInfo,
+                messageId,
                 inlineKeyboardMarkup
         );
 
 
-
         pageNumberList.put(chatId, (PREV + SEPARATOR + topicId + SEPARATOR + difficulty + SEPARATOR + page));
         botExecute(MessageType.EDIT_MESSAGE, editMessageText);
+    }
+
+
+    private Pair<String, InputFile> getAttachment(final String problemId) {
+        final List<Question> questions = new QuestionDatabase().getObjectList(Integer.valueOf(problemId));
+
+        InputFile inputFile = null;
+        String decription = null;
+
+        for (Question question : questions) {
+            if (question.getType().equals(IMAGE)) {
+                Attachment attachment = new AttachmentDatabase().getObjectById(question.getAttachmentId());
+                AttachmentContent attachmentContent = new AttachmentContantDatabase().getObjectById((int) attachment.getAttachmentId());
+                byte[] contentByte = attachmentContent.getContent();
+
+                if (contentByte != null) {
+                    try (FileOutputStream outputStream = new FileOutputStream("src/image.jpg")) {
+                        outputStream.write(contentByte);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(contentByte);
+                    inputFile = new InputFile(inputStream, "src/image.jpg");
+                }
+            } else if (question.getType().equals(TEXT)) {
+                decription = question.getDescription();
+            }
+        }
+
+        return new Pair<>(decription, inputFile);
     }
 
 
