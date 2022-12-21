@@ -23,7 +23,7 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
             connection = getConnection();
             statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("select * from get_topic_problems");
+            ResultSet resultSet = statement.executeQuery("select * from get_topic_problems()");
             ArrayList<Problem> problemList = new ArrayList<>();
             while (resultSet.next()) {
                 problemList.add(new Problem(resultSet));
@@ -61,6 +61,8 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
             return problemList;
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            closeConnection(connection, statement);
         }
         return null;
     }
