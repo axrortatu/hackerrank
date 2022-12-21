@@ -1,7 +1,7 @@
 package model;
 
 public enum Difficulty {
-    EASY,
+   EASY,
     MEDIUM,
     HARD,
     ALL
