@@ -10,9 +10,9 @@ import java.sql.Statement;
 public abstract class BaseDatabaseConnection {
 
     private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "abbos5021";
+    private static final String PASSWORD = "8463";
     private static final String DATABASE_NAME = "hackerrank";
-    private static final String DATABASE_URL = "jdbc:postgresql://localhost:5021/" + DATABASE_NAME;
+    private static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/" + DATABASE_NAME;
 
     protected Connection getConnection() {
         try {

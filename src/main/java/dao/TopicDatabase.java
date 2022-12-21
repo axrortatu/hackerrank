@@ -1,7 +1,14 @@
 package dao;
 
+import bot.MessageType;
+import bot.utils.BotUtils;
 import common.Pair;
+import model.Difficulty;
+import model.Problem;
 import model.Topic;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -59,5 +66,13 @@ public class TopicDatabase extends BaseDatabaseConnection implements BaseDatabas
         return null;
     }
 
+    public String getTopics() {
+        List<Topic> objectList = getObjectList();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < objectList.size(); i++) {
+            stringBuilder.append(i + 1).append(". ").append(objectList.get(i).getName()).append("\n");
+        }
+        return stringBuilder.toString();
+    }
 
 }

@@ -28,7 +28,7 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
             while (resultSet.next()) {
                 problemList.add(new Problem(resultSet));
             }
-
+            return problemList;
         } catch (SQLException e) {
             e.printStackTrace();
         }

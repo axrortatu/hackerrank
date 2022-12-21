@@ -17,11 +17,14 @@ public interface BotConstants {
 
     String START = "/start";
     String TOPIC = "topic";
+    String TOPIC_ID = "TopicId";
     String PROBLEM = "problem";
     String BACK = " back ";
 
     String PREPARATION = "preparation";
     String SELECT_TOPIC = "SELECT_TOPIC";
+
+    String CONTINUE = "Continue preparation";
 
     int OBJECTID = 1;
     int DIFFICULTY = 2;
@@ -49,5 +52,9 @@ public interface BotConstants {
     }
     default boolean isPrevOrNext(final String callBackData) {
         return callBackData.startsWith(PREV) || callBackData.startsWith(NEXT);
+    }
+
+    default boolean isTopicId(String callBackData) {
+        return callBackData.startsWith(TOPIC_ID);
     }
 }
