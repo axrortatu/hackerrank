@@ -2,18 +2,24 @@ package bot;
 
 import bot.utils.BotUtils;
 import common.Pair;
-import dao.ProblemDatabase;
-import dao.TopicDatabase;
+import dao.*;
+import model.AttachmentContent;
 import model.Difficulty;
 import model.Problem;
+import model.Question;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +56,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals(TOPIC)) {
+
                 InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(
                         new ArrayList<>(new TopicDatabase().getObjectList()), 2);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
@@ -84,16 +91,59 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             } else if (isProblem(callBackData)) {
                 pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
                 test(chatId, messageId,true);
+                BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
             } else if (isPrevOrNext(callBackData)) {
                 if (callBackData.startsWith(PREV)) {
                     test(chatId, messageId, true);
                 }else{
                     test(chatId, messageId, false);
                 }
+            } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId)!=null&&BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
+                sendQuestionContent(chatId, callBackData);
             }
 
 
         }
+    }
+
+    private void sendQuestionContent(Long chatId, String data) {
+        List<Question> questions = new QuestionDatabase().getObjectList(Integer.valueOf(data));
+
+        for (Question question : questions) {
+            List<model.Attachment> attachments = new Attachment().getObjectList(question.getAttachmentId());
+            model.Attachment attachment = attachments.get(0);
+            List<AttachmentContent> attachmentContents = new AttachmentContant().getObjectList((int) attachment.getAttachmentId());
+            AttachmentContent attachmentContent = attachmentContents.get(0);
+
+            String description = question.getDescription();
+            byte[] contentByte = attachmentContent.getContent();
+
+            if (contentByte!=null){
+                try (FileOutputStream outputStream = new FileOutputStream("src/image.jpg")) {
+
+                    outputStream.write(contentByte);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                ByteArrayInputStream inputStream=new ByteArrayInputStream(contentByte);
+                InputFile inputFile = new InputFile(inputStream, "src/image.jpg");
+                SendPhoto sendPhoto = new SendPhoto(String.valueOf(chatId), inputFile);
+                botExecute(MessageType.SEND_PHOTO, sendPhoto);
+            }
+
+
+
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(chatId);
+            sendMessage.setText(description);
+            botExecute(MessageType.SEND_MESSAGE, sendMessage);
+
+        }
+
+
+
     }
 
     private void botExecute(MessageType messageType, Object object) {
