@@ -32,7 +32,6 @@ public abstract class BotUtils implements BotConstants {
         KeyboardRow keyboardRow = new KeyboardRow();
         for (int i = 0; i < menuList.size(); i++) {
             keyboardRow.add(new KeyboardButton(menuList.get(i)));
-
             if (i % column == 0) {
                 keyboardRowList.add(keyboardRow);
                 keyboardRow = new KeyboardRow();
