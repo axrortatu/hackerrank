@@ -7,8 +7,8 @@ import java.util.HashMap;
 
 
 public interface BotConstants {
-    String USERNAME = "https://t.me/hackerrank_uzb_bot";
-    String BOT_TOKEN = "5816421114:AAHJ4wUrQ6VQk4PvGmGmrz7q0uQflhdsub8";
+    String USERNAME = "https://t.me/hackerrank_project_bot";
+    String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
 
     String EASY = "easy";
     String MEDIUM = "medium";

@@ -27,7 +27,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         Scanner scannerStr = new Scanner(System.in);
-        
+
         while (true) {
             System.out.println("1. Add Topic 2.Add question");
             int stepCode = scanner.nextInt();
@@ -81,4 +81,4 @@ public class Main {
         }
     }
 
-}
+
