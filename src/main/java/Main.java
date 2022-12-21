@@ -1,17 +1,12 @@
 import bot.utils.BotUtils;
-import dao.AttachmentContant;
+import bot.utils.FilesUtil;
 import dao.QuestionDatabase;
 import dao.TopicDatabase;
 import model.*;
-import org.checkerframework.checker.units.qual.A;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -47,22 +42,14 @@ public class Main {
                     int number = BotUtils.numberScan.nextInt();
                     if(number == 1){
                         question.setType("IMAGE");
-
-                        try {
-
                             System.out.println("File urlini kiriting:  ");
                             String file = BotUtils.textScan.nextLine();
                             System.out.println("Fileni nomini kiriting: ");
                             attachment.setFileName(BotUtils.textScan.nextLine());
-                            FileInputStream fileInputStream = new FileInputStream(file+"/"+attachment.getFileName());
-                            byte[] bytes = fileInputStream.readAllBytes();
-                            attachmentContent.setContent(bytes);
-                            File file1 = new File(file+"/"+attachment.getFileName());
-                           attachment.setSize(file1.getFreeSpace());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                            attachmentContent.setContent(FilesUtil.sendBytes(attachment.getFileName(),file));
 
+                           attachment.setSize(attachmentContent.getContent().length/1024);
+                        System.out.println(attachmentContent.getContent().length);
                     }
                     else if(number == 2){
                         question.setType( "TEXT");

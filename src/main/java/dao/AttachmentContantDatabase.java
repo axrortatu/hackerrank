@@ -4,7 +4,7 @@ import model.Problem;
 
 import java.util.List;
 
-public class Attachment extends BaseDatabaseConnection implements BaseDatabase<Problem>{
+public class AttachmentContantDatabase extends BaseDatabaseConnection implements BaseDatabase<Problem>{
     @Override
     public boolean addObject(Problem problem) {
         return false;
