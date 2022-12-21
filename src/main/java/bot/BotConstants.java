@@ -1,5 +1,6 @@
 package bot;
 
+import common.Pair;
 import model.Difficulty;
 
 import java.util.HashMap;
@@ -29,6 +30,8 @@ public interface BotConstants {
     String PREV = "⏮";
 
     HashMap<Long, String> USER_STATUS = new HashMap<>();
+    HashMap<Long,String> ADMIN_SEND_QUESTION_CONTENT = new HashMap<>();
+    String ADMIN_SEND_QUESTION = "ADMIN_SEND_QUESTION";
 
 
     default boolean isTopic(final String callBackData) {
