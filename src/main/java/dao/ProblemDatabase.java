@@ -1,12 +1,14 @@
 package dao;
 
-import common.Pair;
 import model.Difficulty;
 import model.Problem;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static bot.BotConstants.NOT_RESOLVED;
+import static bot.BotConstants.SOLVED;
 
 public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatabase<Problem> {
 
@@ -61,15 +63,25 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
             return problemList;
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            closeConnection(connection,statement);
         }
         return null;
     }
 
-    public String getProblemInfo(String topicId, Difficulty difficulty, int pageNumber) {
+    public String getProblemInfo(String topicId, Difficulty difficulty, int pageNumber, long chatId) {
         List<Problem> problemList = getProblemByTopicId(Integer.parseInt(topicId), difficulty, pageNumber);
         StringBuilder stringBuilder = new StringBuilder();
+        UserProblemStatusDatabase statusDatabase = new UserProblemStatusDatabase();
         for (int i = 0; i < problemList.size(); i++) {
-            stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append("\n");
+
+            if(statusDatabase.isSolved(chatId,problemList.get(i).getId())){
+                stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append(SOLVED).append("\n");
+            }else{
+                stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append(NOT_RESOLVED).append("\n");
+            }
+
+
         }
 
         return stringBuilder.toString();

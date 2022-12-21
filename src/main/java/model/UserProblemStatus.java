@@ -1,9 +1,7 @@
 package model;
 
-import common.Pair;
 import lombok.*;
 import model.base.BaseModel;
-import model.dto.receive.BaseReceive;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,22 +11,23 @@ import java.sql.SQLException;
 @Getter
 @Setter
 @ToString
-public class Topic extends BaseModel {
-    private int id;
-    private String name;
 
-    public Topic(ResultSet resultSet) {
+public class UserProblemStatus extends BaseModel {
+
+    private Long telegram_chat_id;
+    private Integer problemId;
+
+    public UserProblemStatus(ResultSet resultSet) {
         this.getList(resultSet);
     }
 
     @Override
     protected void getList(ResultSet resultSet) {
         try {
-            this.id = resultSet.getInt("id");
-            this.name = resultSet.getString("name");
+            this.telegram_chat_id = resultSet.getLong("telegram_chat_id");
+            this.problemId = resultSet.getInt("problem_id");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 }

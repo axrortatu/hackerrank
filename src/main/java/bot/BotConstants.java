@@ -5,8 +5,8 @@ import model.Difficulty;
 import java.util.HashMap;
 
 public interface BotConstants {
-    String USERNAME = "@hackerrank_project_bot";
-    String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
+    String USERNAME = "@transaction9918bot";
+    String BOT_TOKEN = "5651368205:AAF292oK7yYHjuJfd3WHEdhwZ2FYe9bMTNA";
 
     String EASY = "easy";
     String MEDIUM = "medium";
@@ -19,6 +19,9 @@ public interface BotConstants {
     String PROBLEM = "problem";
     String PREPARATION = "preparation";
     String SELECT_TOPIC = "SELECT_TOPIC";
+
+    String SOLVED = " SOLVED";
+    String NOT_RESOLVED = " NOT RESOLVED";
 
     int OBJECTID = 1;
     int DIFFICULTY = 2;
