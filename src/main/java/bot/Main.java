@@ -3,6 +3,7 @@ package bot;
 import bot.utils.BotUtils;
 import common.Pair;
 import dao.*;
+import bot.utils.FilesUtil;
 import model.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -14,7 +15,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -146,6 +146,9 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                     test(chatId, messageId, false);
                 }
             } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null && BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
+
+
+
                 Pair<String, InputFile> pair = getAttachment(callBackData);
                 SendPhoto sendPhoto = BotUtils.buildSendPhoto(
                         chatId,
@@ -211,31 +214,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
     private Pair<String, InputFile> getAttachment(final String problemId) {
         final List<Question> questions = new QuestionDatabase().getObjectList(Integer.valueOf(problemId));
-
-        InputFile inputFile = null;
-        String decription = null;
-
-        for (Question question : questions) {
-            if (question.getType().equals(IMAGE)) {
-                Attachment attachment = new AttachmentDatabase().getObjectById(question.getAttachmentId());
-                AttachmentContent attachmentContent = new AttachmentContantDatabase().getObjectById((int) attachment.getAttachmentId());
-                byte[] contentByte = attachmentContent.getContent();
-
-                if (contentByte != null) {
-                    try (FileOutputStream outputStream = new FileOutputStream("src/image.jpg")) {
-                        outputStream.write(contentByte);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    ByteArrayInputStream inputStream = new ByteArrayInputStream(contentByte);
-                    inputFile = new InputFile(inputStream, "src/image.jpg");
-                }
-            } else if (question.getType().equals(TEXT)) {
-                decription = question.getDescription();
-            }
-        }
-
-        return new Pair<>(decription, inputFile);
+        return FilesUtil.getPair(questions);
     }
 
 
