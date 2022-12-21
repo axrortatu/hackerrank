@@ -8,7 +8,6 @@ import dao.UserPreparationDataBase;
 import model.Difficulty;
 import model.Problem;
 import dao.*;
-import bot.utils.FilesUtil;
 import model.*;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -20,8 +19,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-
 import java.util.*;
+
 
 public class Main extends TelegramLongPollingBot implements BotConstants {
 
@@ -109,21 +108,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         CHAT_ID,
                         str,
                         inlineKeyboardMarkup,
-                        BotUtils.buildReplyMarkup(List.of(SOLVED, UNSOLVED),1)
-                );
-                botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            } else if (TEXT.equals(SOLVED)) {
-                ProblemDatabase problemDatabase = new ProblemDatabase();
-                SendMessage sendMessage = BotUtils.buildSendMessage(
-                        CHAT_ID,problemDatabase.getSolvedProblems(100L),
-                        null,null
-                );
-                botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            }else if (TEXT.equals(UNSOLVED)) {
-                ProblemDatabase problemDatabase = new ProblemDatabase();
-                SendMessage sendMessage = BotUtils.buildSendMessage(
-                        CHAT_ID,problemDatabase.getUnsolvedProblems(100L),
-                        null,null
+                        null
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals(PREPARATION)) {
@@ -174,9 +159,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 EditMessageText editMessageText = BotUtils.buildEditMessage(messageId, chatId, userPreparation,inlineKeyboardMarkup);
                 botExecute(MessageType.EDIT_MESSAGE,editMessageText);
             } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null && BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
-
-
-
                 Pair<String, InputFile> pair = getAttachment(callBackData);
                 SendPhoto sendPhoto = BotUtils.buildSendPhoto(
                         chatId,
@@ -187,6 +169,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             }
         }
     }
+
 
     private void botExecute(MessageType messageType, Object object) {
         try {
@@ -239,7 +222,31 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
     private Pair<String, InputFile> getAttachment(final String problemId) {
         final List<Question> questions = new QuestionDatabase().getObjectList(Integer.valueOf(problemId));
-        return FilesUtil.getPair(questions);
+
+        InputFile inputFile = null;
+        String decription = null;
+
+        for (Question question : questions) {
+            if (question.getType().equals(IMAGE)) {
+                Attachment attachment = new AttachmentDatabase().getObjectById(question.getAttachmentId());
+                AttachmentContent attachmentContent = new AttachmentContantDatabase().getObjectById((int) attachment.getAttachmentId());
+                byte[] contentByte = attachmentContent.getContent();
+
+                if (contentByte != null) {
+                    try (FileOutputStream outputStream = new FileOutputStream("src/image.jpg")) {
+                        outputStream.write(contentByte);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(contentByte);
+                    inputFile = new InputFile(inputStream, "src/image.jpg");
+                }
+            } else if (question.getType().equals(TEXT)) {
+                decription = question.getDescription();
+            }
+        }
+
+        return new Pair<>(decription, inputFile);
     }
 
 

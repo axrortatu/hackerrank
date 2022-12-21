@@ -15,6 +15,7 @@ import java.sql.SQLException;
 @Setter
 public class User extends BaseModel {
     private long id;
+    private long chatId;
     private String name;
     private String username;
     private String password;
@@ -30,6 +31,7 @@ public class User extends BaseModel {
     protected void getList(ResultSet resultSet) {
         try {
             this.id = resultSet.getLong("id");
+            this.chatId = resultSet.getLong("chat_id");
             this.name = resultSet.getString("name");
             this.username = resultSet.getString("username");
             this.password = resultSet.getString("password");
@@ -37,5 +39,12 @@ public class User extends BaseModel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public String buildAddUserSQL(){
+        return id + ", " +chatId + ", '"+name+
+                "', '"+username+
+                "', '"+password+
+                "', '"+email+'\'';
     }
 }
