@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Main extends TelegramLongPollingBot implements BotConstants {
+public class Main1 extends TelegramLongPollingBot implements BotConstants {
 
     Map<Long, String> pageNumberList = new HashMap<>();
 
