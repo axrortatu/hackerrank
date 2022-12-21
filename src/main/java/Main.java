@@ -1,3 +1,4 @@
+import botjson.BotUserJson;
 import dao.TopicDatabase;
 import model.Topic;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -7,7 +8,11 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import java.util.Scanner;
 
 public class Main {
+
+    static BotUserJson botUserJson = new BotUserJson();
+
     public static void main(String[] args) {
+
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
             botsApi.registerBot(new bot.Main());
@@ -19,16 +24,17 @@ public class Main {
         Scanner scannerStr = new Scanner(System.in);
 
         while (true){
-            System.out.println("1. Add Topic");
-            int stepCode = scanner.nextInt();
-            switch (stepCode){
-                case 1 -> {
-                    System.out.println("enter topic name");
-                    Topic topic = new Topic();
-                    topic.setName(scannerStr.nextLine());
-                    System.out.println(new TopicDatabase().addObject(topic));
-                }
+        System.out.println("1. Add Topic");
+        int stepCode = scanner.nextInt();
+        switch (stepCode){
+            case 1 -> {
+                System.out.println("enter topic name");
+                Topic topic = new Topic();
+                topic.setName(scannerStr.nextLine());
+                System.out.println(new TopicDatabase().addObject(topic));
             }
         }
+        }
     }
+
 }

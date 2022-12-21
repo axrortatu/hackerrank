@@ -1,12 +1,13 @@
 package bot;
 
-import model.Difficulty;
+
 
 import java.util.HashMap;
 
+
 public interface BotConstants {
-    String USERNAME = "@hackerrank_project_bot";
-    String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
+    String USERNAME = "https://t.me/hackerrank_uzb_bot";
+    String BOT_TOKEN = "5816421114:AAHJ4wUrQ6VQk4PvGmGmrz7q0uQflhdsub8";
 
     String EASY = "easy";
     String MEDIUM = "medium";
@@ -14,9 +15,15 @@ public interface BotConstants {
     String ALL = "all";
 
 
+
+
     String START = "/start";
+
+
     String TOPIC = "topic";
     String PROBLEM = "problem";
+    String BACK = " back ";
+
     String PREPARATION = "preparation";
     String SELECT_TOPIC = "SELECT_TOPIC";
 
@@ -30,10 +37,10 @@ public interface BotConstants {
 
     HashMap<Long, String> USER_STATUS = new HashMap<>();
 
-
-    default boolean isTopic(final String callBackData) {
+    default boolean isTopic(final String callBackData ) {
         return callBackData.startsWith(TOPIC);
     }
+
 
     default boolean isProblem(final String callBackData) {
         return callBackData.startsWith(PROBLEM);
