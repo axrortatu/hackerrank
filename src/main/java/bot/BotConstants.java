@@ -78,6 +78,8 @@ public interface BotConstants {
     String ADMIN_SEND_QUESTION = "ADMIN_SEND_QUESTION";
     String SEND_CONTACT = "share_contact";
     String SHARE_CONTACT = "SHARE CONTACT";
+    String SOLVE = "SOLVED";
+    String UNSOLVED = "UNSOLVED";
 
     default boolean isTopic(final String callBackData ) {
         return callBackData.startsWith(TOPIC);
@@ -90,6 +92,9 @@ public interface BotConstants {
 
     default boolean isPagination(final String callBackData) {
         return callBackData.startsWith(PREV) || callBackData.startsWith(NEXT);
+    }
+    default boolean isProblemSolvedOrUnsolved(final String callBackData){
+        return callBackData.contains(UNSOLVED) || callBackData.contains(SOLVE);
     }
 
     default boolean isPreparation(String callBackData) {
