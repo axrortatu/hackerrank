@@ -51,15 +51,19 @@ public class Main {
                             String file = BotUtils.textScan.nextLine();
                             System.out.println("Fileni nomini kiriting: ");
                             attachment.setFileName(BotUtils.textScan.nextLine());
-                            attachmentContent.setContent(FilesUtil.sendBytes(attachment.getFileName(),file));
+                            attachmentContent.setContent(FilesUtil.getBytes(attachment.getFileName(),file));
 
                            attachment.setSize(attachmentContent.getContent().length/1024);
                         System.out.println(attachmentContent.getContent().length);
                     }
                     else if (number == 2) {
                         question.setType("TEXT");
-                        System.out.println("Savolni matini  kiriting: ");
+                        System.out.println("Savolni matini  kiriting (Eng): ");
                         question.setDescription(BotUtils.textScan.nextLine());
+                        System.out.println("Savolni matini  kiriting (Uzb): ");
+                        question.setDescriptionUzb(BotUtils.textScan.nextLine());
+                        System.out.println("Savolni matini  kiriting (Rus): ");
+                        question.setDescriptionRus(BotUtils.textScan.nextLine());
                     } else {
                         System.out.println("Xato raqam kiritildi");
                     }
