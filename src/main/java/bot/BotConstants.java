@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface BotConstants {
 
-    String USERNAME = "t.me/transaction9918bot";
-    String BOT_TOKEN = "5651368205:AAF292oK7yYHjuJfd3WHEdhwZ2FYe9bMTNA";
+    String USERNAME = "hackerrank_project_bot";
+    String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
 
     String EASY_ENG = "EASY";
     String MEDIUM_ENG = "MEDIUM";
