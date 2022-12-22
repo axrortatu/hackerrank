@@ -2,6 +2,7 @@ package dao;
 
 import model.Difficulty;
 import model.Problem;
+import model.UserProblemStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -71,18 +72,10 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
 
     public String getProblemInfo(String topicId, Difficulty difficulty, int pageNumber, long chatId) {
         List<Problem> problemList = getProblemByTopicId(Integer.parseInt(topicId), difficulty, pageNumber);
-        StringBuilder stringBuilder = new StringBuilder();
         UserProblemStatusDatabase statusDatabase = new UserProblemStatusDatabase();
-        for (int i = 0; i < problemList.size(); i++) {
 
-            if(statusDatabase.isSolved(chatId,problemList.get(i).getId())){
-                stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append(SOLVED).append("\n");
-            }else{
-                stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append(NOT_RESOLVED).append("\n");
-            }
+        StringBuilder stringBuilder = statusDatabase.isSolved(problemList,chatId);
 
-
-        }
 
         return stringBuilder.toString();
     }
