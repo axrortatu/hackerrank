@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface BotConstants {
 
-    String USERNAME = "t.me/transaction9918bot";
-    String BOT_TOKEN = "5651368205:AAF292oK7yYHjuJfd3WHEdhwZ2FYe9bMTNA";
+    String USERNAME = "hackerrank_project_bot";
+    String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
 
     String EASY_ENG = "EASY";
     String MEDIUM_ENG = "MEDIUM";
@@ -78,6 +78,8 @@ public interface BotConstants {
     String ADMIN_SEND_QUESTION = "ADMIN_SEND_QUESTION";
     String SEND_CONTACT = "share_contact";
     String SHARE_CONTACT = "SHARE CONTACT";
+    String SOLVE = "SOLVED";
+    String UNSOLVED = "UNSOLVED";
 
     default boolean isTopic(final String callBackData ) {
         return callBackData.startsWith(TOPIC);
@@ -90,6 +92,9 @@ public interface BotConstants {
 
     default boolean isPagination(final String callBackData) {
         return callBackData.startsWith(PREV) || callBackData.startsWith(NEXT);
+    }
+    default boolean isProblemSolvedOrUnsolved(final String callBackData){
+        return callBackData.contains(UNSOLVED) || callBackData.contains(SOLVE);
     }
 
     default boolean isPreparation(String callBackData) {
