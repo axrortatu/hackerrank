@@ -33,24 +33,6 @@ public class UserProblemStatusDatabase extends BaseDatabaseConnection implements
 
     @Override
     public List<UserProblemStatus> getObjectList() {
-        Connection connection = null;
-        Statement statement = null;
-        try {
-            connection = getConnection();
-            statement = connection.createStatement();
-            ResultSet resultSet
-                    = statement.executeQuery("select * from get_user_problem_status_chat_id()");
-
-            List<UserProblemStatus> userProblemStatuses = new ArrayList<>();
-            while (resultSet.next()) {
-                userProblemStatuses.add(new UserProblemStatus(resultSet));
-            }
-            return userProblemStatuses;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }finally {
-            closeConnection(connection,statement);
-        }
         return null;
     }
 
