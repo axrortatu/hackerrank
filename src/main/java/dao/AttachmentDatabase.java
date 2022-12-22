@@ -1,5 +1,8 @@
 package dao;
 
+import model.Problem;
+
+import java.util.List;
 import model.Attachment;
 import model.Problem;
 
@@ -15,8 +18,6 @@ public class AttachmentDatabase extends BaseDatabaseConnection implements BaseDa
     public boolean addObject(model.Attachment problem) {
         return false;
     }
-
-    @Override
     public List<model.Attachment> getObjectList() {
         return null;
     }
@@ -35,7 +36,6 @@ public class AttachmentDatabase extends BaseDatabaseConnection implements BaseDa
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 }

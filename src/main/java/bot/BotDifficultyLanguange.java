@@ -11,6 +11,7 @@ import static bot.BotConstants.*;
 public class BotDifficultyLanguange {
     BotLanguange botLang = new BotLanguange();
 
+
     public List<String> getThemeType(Long CHAT_ID){
         List<String> themeType = new ArrayList<>();
         if (botLang.getLanguangeName(CHAT_ID).equals(ENG)){
@@ -36,6 +37,7 @@ public class BotDifficultyLanguange {
         }
         else if (botLang.getLanguangeName(CHAT_ID).equals(UZB)) {
             difficultyLang.addAll(List.of(EASY_UZB,MEDIUM_UZB,HARD_UZB,ALL_UZB));
+
         }
         else {
             difficultyLang.addAll(List.of(EASY_RUS,MEDIUM_RUS,HARD_RUS,ALL_RUS));

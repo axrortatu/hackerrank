@@ -1,5 +1,8 @@
 package dao;
 
+import model.Problem;
+
+import java.util.List;
 import model.Attachment;
 import model.AttachmentContent;
 import model.Problem;
@@ -40,16 +43,4 @@ public class AttachmentContantDatabase extends BaseDatabaseConnection implements
         return null;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 

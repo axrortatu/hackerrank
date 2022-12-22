@@ -9,8 +9,9 @@ import java.util.List;
 
 
 public interface BotConstants {
-    String USERNAME = "http://t.me/kjabsdfblasdfbbot";
-    String BOT_TOKEN = "5806614401:AAGylqQwXXYsPcOgCuopA32e6d7Cw7f5RNE";
+
+    String USERNAME = "https://t.me/hackerrank_project_bot";
+    String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
 
     String EASY_ENG = "EASY";
     String MEDIUM_ENG = "MEDIUM";
@@ -48,12 +49,16 @@ public interface BotConstants {
 
     String START = "/start";
 
+    String TOPIC = "topic";
+    String TOPIC_ID = "TopicId";
 
     String PROBLEM = "problem";
     String BACK = " back ";
 
 
     String SELECT_TOPIC = "SELECT_TOPIC";
+
+    String CONTINUE = "Continue preparation";
 
     int OBJECTID = 1;
     int DIFFICULTY = 2;
@@ -69,6 +74,8 @@ public interface BotConstants {
     HashMap<Long, String> USER_STATUS = new HashMap<>();
     HashMap<Long, String> ADMIN_SEND_QUESTION_CONTENT = new HashMap<>();
     String ADMIN_SEND_QUESTION = "ADMIN_SEND_QUESTION";
+    String SEND_CONTACT = "share_contact";
+    String SHARE_CONTACT = "SHARE CONTACT";
 
     default boolean isTopic(final String callBackData ) {
         return callBackData.startsWith(TOPIC);
@@ -81,5 +88,9 @@ public interface BotConstants {
 
     default boolean isPrevOrNext(final String callBackData) {
         return callBackData.startsWith(PREV) || callBackData.startsWith(NEXT);
+    }
+
+    default boolean isTopicId(String callBackData) {
+        return callBackData.startsWith(TOPIC_ID);
     }
 }
