@@ -1,5 +1,6 @@
 import botjson.BotUserJson;
 import bot.utils.BotUtils;
+
 import bot.utils.FilesUtil;
 import dao.QuestionDatabase;
 import dao.TopicDatabase;
@@ -46,14 +47,17 @@ public class Main {
                     int number = BotUtils.numberScan.nextInt();
                     if (number == 1) {
                         question.setType("IMAGE");
-                        System.out.println("File urlini kiriting: ");
-                        String file = BotUtils.textScan.nextLine();
-                        System.out.println("Fileni nomini kiriting: ");
-                        attachment.setFileName(BotUtils.textScan.nextLine());
-                        attachmentContent.setContent(FilesUtil.getBytes(attachment.getFileName(),file));
-                        attachment.setSize(attachmentContent.getContent().length/1024);
-                    } else if(number == 2){
-                        question.setType( "TEXT");
+                            System.out.println("File urlini kiriting:  ");
+                            String file = BotUtils.textScan.nextLine();
+                            System.out.println("Fileni nomini kiriting: ");
+                            attachment.setFileName(BotUtils.textScan.nextLine());
+                            attachmentContent.setContent(FilesUtil.sendBytes(attachment.getFileName(),file));
+
+                           attachment.setSize(attachmentContent.getContent().length/1024);
+                        System.out.println(attachmentContent.getContent().length);
+                    }
+                    else if (number == 2) {
+                        question.setType("TEXT");
                         System.out.println("Savolni matini  kiriting: ");
                         question.setDescription(BotUtils.textScan.nextLine());
                     } else {

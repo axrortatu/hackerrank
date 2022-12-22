@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public abstract class BotUtils implements BotConstants {
+    public static final String SHARE_CONTACT = "share_contact";
     public static Scanner numberScan = new Scanner(System.in);
     public static Scanner textScan = new Scanner(System.in);
 
@@ -32,7 +33,6 @@ public abstract class BotUtils implements BotConstants {
         KeyboardRow keyboardRow = new KeyboardRow();
         for (int i = 0; i < menuList.size(); i++) {
             keyboardRow.add(new KeyboardButton(menuList.get(i)));
-
             if (i % column == 0) {
                 keyboardRowList.add(keyboardRow);
                 keyboardRow = new KeyboardRow();
@@ -128,6 +128,37 @@ public abstract class BotUtils implements BotConstants {
         }
         return list;
     }
-
-
+    public static List<List<InlineKeyboardButton>> getInlineKeyboardRowListOfTopic(List<Object> objectList, int column) {
+        List<List<InlineKeyboardButton>> list = new ArrayList<>();
+        List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        int index = 0;
+        for (Object o : objectList) {
+            if(o instanceof Topic topic){
+                InlineKeyboardButton button = new InlineKeyboardButton();
+                button.setText(String.valueOf(index + 1));
+                button.setCallbackData(TOPIC_ID + SEPARATOR + topic.getId());
+                inlineKeyboardButtons.add(button);
+            }
+            if ((index + 1) % column == 0) {
+                list.add(inlineKeyboardButtons);
+                inlineKeyboardButtons = new ArrayList<>();
+            }
+            index++;
+        }
+        if (!inlineKeyboardButtons.isEmpty()) {
+            list.add(inlineKeyboardButtons);
+        }
+        return list;
+    }
+    public static InlineKeyboardMarkup getInlineKeyboardMarkup(String topicId) {
+        List<List<InlineKeyboardButton>> list = new ArrayList<>();
+        List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(BotConstants.CONTINUE);
+        button.setCallbackData(TOPIC + topicId);
+        inlineKeyboardButtons.add(button);
+        list.add(inlineKeyboardButtons);
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(list);
+        return inlineKeyboardMarkup;
+    }
 }
