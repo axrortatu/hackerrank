@@ -76,22 +76,27 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
 
         return stringBuilder.toString();
     }
-    public String getSolvedProblems(Long chat_id){
-        List<Problem> problemList = getSolved(chat_id);
+    public String getSolvedProblems(Long chat_id, int topic_id, boolean status){
+        List<Problem> problemList = getSolved(chat_id,topic_id,status);
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < problemList.size(); i++) {
-            stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append("\n");
+            stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append(" (").append(problemList.get(i).getDifficulty()).append(")").append("\n");
         }
         return stringBuilder.toString();
     }
-    private List<Problem> getSolved(Long chatId){
+    public List<Problem> getSolved(Long chatId,int topic_id, boolean status){
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
         try {
             connection = getConnection();
-            preparedStatement = connection.prepareStatement("select * from get_user_problem_status(?)");
-            preparedStatement.setLong(1,chatId);
+            preparedStatement = connection.prepareStatement("select * from get_topic_problems(?,?,?,?,?,?)");
+            preparedStatement.setInt(1,topic_id);
+            preparedStatement.setString(2,null);
+            preparedStatement.setInt(3,1);
+            preparedStatement.setLong(4,chatId);
+            preparedStatement.setInt(5,0);
+            preparedStatement.setBoolean(6,status);
             ResultSet resultSet = preparedStatement.executeQuery();
             ArrayList<Problem> problems = new ArrayList<>();
             while(resultSet.next()){
@@ -102,30 +107,5 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
             throw new RuntimeException(e);
         }
     }
-    private List<Problem> getUnsolved(Long chatId){
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
 
-        try {
-            connection = getConnection();
-            preparedStatement = connection.prepareStatement("select * from get_user_problem_status_unsolved(?)");
-            preparedStatement.setLong(1,chatId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            ArrayList<Problem> problems = new ArrayList<>();
-            while(resultSet.next()){
-                problems.add(new Problem(resultSet));
-            }
-            return problems;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-    public String getUnsolvedProblems(Long chat_id){
-        List<Problem> problemList = getUnsolved(chat_id);
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < problemList.size(); i++) {
-            stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append("\n");
-        }
-        return stringBuilder.toString();
-    }
 }

@@ -51,7 +51,7 @@ public class Main {
                             String file = BotUtils.textScan.nextLine();
                             System.out.println("Fileni nomini kiriting: ");
                             attachment.setFileName(BotUtils.textScan.nextLine());
-                            attachmentContent.setContent(FilesUtil.sendBytes(attachment.getFileName(),file));
+                            attachmentContent.setContent(FilesUtil.getBytes(attachment.getFileName(),file));
 
                            attachment.setSize(attachmentContent.getContent().length/1024);
                         System.out.println(attachmentContent.getContent().length);

@@ -34,13 +34,13 @@ public class BotDifficultyLanguange {
     public String[] getDifficultyType(Long CHAT_ID){
 
         if (botLang.getLanguangeName( CHAT_ID).equals("ENG")){
-            difficultyLang = new String[]{"EASY", "MEDIUM", "HARD", "ALL"};
+            difficultyLang = new String[]{"EASY", "MEDIUM", "HARD", "ALL","SOLVED","UNSOLVED"};
         }
         else if (botLang.getLanguangeName( CHAT_ID).equals("UZB")) {
-            difficultyLang = new String[]{"OSON", "O'RTA", "QIYIN", "HAMMASI"};
+            difficultyLang = new String[]{"OSON", "O'RTA", "QIYIN", "HAMMASI","YECHILGAN","YECHILMAGAN"};
         }
         else {
-            difficultyLang = new String[]{"ЛЕГКИЙ", "СРЕДНИЙ", "СЛОЖНЫЙ", "ВСЕ"};
+            difficultyLang = new String[]{"ЛЕГКИЙ", "СРЕДНИЙ", "СЛОЖНЫЙ", "ВСЕ","RESHONNIY", "NE RESHONNIY"};
         }
 
         return difficultyLang;

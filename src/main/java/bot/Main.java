@@ -56,8 +56,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         BotUtils.buildReplyMarkup(List.of("UZB", "RUS", "ENG"), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            }
-            else if (TEXT.equals("UZB")) {
+            } else if (TEXT.equals("UZB")) {
                 languange.setLanguange(CHAT_ID, true, "UZB");
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
@@ -68,8 +67,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                                 botDifLang.getThemeType(CHAT_ID)[2]), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            }
-            else if (TEXT.equals("ENG")) {
+            } else if (TEXT.equals("ENG")) {
                 languange.setLanguange(CHAT_ID, true, "ENG");
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
@@ -80,8 +78,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                                 botDifLang.getThemeType(CHAT_ID)[2]), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            }
-            else if (TEXT.equals("RUS")) {
+            } else if (TEXT.equals("RUS")) {
                 languange.setLanguange(CHAT_ID, true, "RUS");
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
@@ -89,12 +86,10 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         null,
                         BotUtils.buildReplyMarkup(List.of(botDifLang.getThemeType(CHAT_ID)[0],
                                 botDifLang.getThemeType(CHAT_ID)[1],
-                                botDifLang.getThemeType(CHAT_ID)[2]),2)
+                                botDifLang.getThemeType(CHAT_ID)[2]), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            }
-
-            else if (TEXT.equals(botDifLang.getThemeType(CHAT_ID)[0])) {
+            } else if (TEXT.equals(botDifLang.getThemeType(CHAT_ID)[0])) {
                 String str = "";
                 if (languange.getLanguangeName(CHAT_ID).equals("ENG")) str = "Select topics !";
                 else if (languange.getLanguangeName(CHAT_ID).equals("UZB")) str = "Mavzularni tanlang !";
@@ -106,25 +101,10 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         CHAT_ID,
                         str,
                         inlineKeyboardMarkup,
-                        BotUtils.buildReplyMarkup(List.of(SOLVED, UNSOLVED),1)
-                );
-                botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            } else if (TEXT.equals(SOLVED)) {
-                ProblemDatabase problemDatabase = new ProblemDatabase();
-                SendMessage sendMessage = BotUtils.buildSendMessage(
-                        CHAT_ID,problemDatabase.getSolvedProblems(100L),
-                        null,null
-                );
-                botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            }else if (TEXT.equals(UNSOLVED)) {
-                ProblemDatabase problemDatabase = new ProblemDatabase();
-                SendMessage sendMessage = BotUtils.buildSendMessage(
-                        CHAT_ID,problemDatabase.getUnsolvedProblems(100L),
-                        null,null
+                        null
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
-
         } else if (update.hasCallbackQuery()) {
             String callBackData = update.getCallbackQuery().getData();
             Message callBackMessage = update.getCallbackQuery().getMessage();
@@ -137,7 +117,9 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         new Pair<>(botDifLang.getDifficultyType(chatId)[0], topicId),
                         new Pair<>(botDifLang.getDifficultyType(chatId)[1], topicId),
                         new Pair<>(botDifLang.getDifficultyType(chatId)[2], topicId),
-                        new Pair<>(botDifLang.getDifficultyType(chatId)[3], topicId)
+                        new Pair<>(botDifLang.getDifficultyType(chatId)[3], topicId),
+                        new Pair<>(botDifLang.getDifficultyType(chatId)[4], topicId),
+                        new Pair<>(botDifLang.getDifficultyType(chatId)[5], topicId)
                 ), 2);
                 EditMessageText editMessageText = BotUtils.buildEditMessage(
                         chatId,
@@ -148,29 +130,56 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         inlineKeyboardMarkup
                 );
                 botExecute(MessageType.EDIT_MESSAGE, editMessageText);
-            } else if (isProblem(callBackData)) {
-                pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
-                test(chatId, messageId, true);
-                BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
-            } else if (isPrevOrNext(callBackData)) {
-                if (callBackData.startsWith(PREV)) {
+            } else if (isProblemSolvedOrUnsolved(callBackData)) {
+                Long CHAT_ID = callBackMessage.getChatId();
+                String topic_id = callBackData.substring(8,9);
+                Integer messageId1 = callBackMessage.getMessageId();
+                ProblemDatabase problemDatabase = new ProblemDatabase();
+                if (callBackData.contains(UNSOLVED)) {
+                    String problemSolved = problemDatabase.getSolvedProblems(100L, Integer.parseInt(topic_id), false);
+                    List<Problem> problemList = problemDatabase.getSolved(
+                            100L,
+                            Integer.parseInt(topic_id),
+                            false);
+                    InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(new ArrayList<>(problemList),3);
+                    EditMessageText editMessageText = BotUtils.buildEditMessage(
+                            CHAT_ID,problemSolved,messageId1,inlineKeyboardMarkup
+                    );
+                    botExecute(MessageType.EDIT_MESSAGE,editMessageText);
+                } else if (callBackData.contains(SOLVED)) {
+                    String problemSolved = problemDatabase.getSolvedProblems(100L, Integer.parseInt(topic_id), true);
+                    List<Problem> problemList = problemDatabase.getSolved(
+                            100L,
+                            Integer.parseInt(topic_id),
+                            true);
+                    InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(new ArrayList<>(problemList),3);
+                    EditMessageText editMessageText = BotUtils.buildEditMessage(
+                            CHAT_ID,problemSolved,messageId1,inlineKeyboardMarkup
+                    );
+                    botExecute(MessageType.EDIT_MESSAGE, editMessageText);
+                } else if (isProblem(callBackData)) {
+                    pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
                     test(chatId, messageId, true);
-                } else {
-                    test(chatId, messageId, false);
+                    BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
+                } else if (isPrevOrNext(callBackData)) {
+                    if (callBackData.startsWith(PREV)) {
+                        test(chatId, messageId, true);
+                    } else {
+                        test(chatId, messageId, false);
+                    }
+                } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null &&
+                        BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
+
+
+                    Pair<String, InputFile> pair = getAttachment(callBackData);
+                    SendPhoto sendPhoto = BotUtils.buildSendPhoto(
+                            chatId,
+                            pair.getKey(),
+                            pair.getValue()
+                    );
+                    botExecute(MessageType.SEND_PHOTO, sendPhoto);
                 }
-            } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null && BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
-
-
-
-                Pair<String, InputFile> pair = getAttachment(callBackData);
-                SendPhoto sendPhoto = BotUtils.buildSendPhoto(
-                        chatId,
-                        pair.getKey(),
-                        pair.getValue()
-                );
-                botExecute(MessageType.SEND_PHOTO,sendPhoto);
             }
-
         }
     }
 

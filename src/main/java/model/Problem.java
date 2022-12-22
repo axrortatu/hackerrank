@@ -14,7 +14,7 @@ public class Problem extends BaseModel {
     private int id;
     private String name;
     private Difficulty difficulty;
-    private int subDomainId;
+    private Integer subDomainId;
     private int topicId;
 
     public Problem(ResultSet resultSet) {

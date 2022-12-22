@@ -6,8 +6,8 @@ import model.Difficulty;
 import java.util.HashMap;
 
 public interface BotConstants {
-    String USERNAME = "@hackerrank_project_bot";
-    String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
+    String USERNAME = "test1_pdp_lesson10_bot";
+    String BOT_TOKEN = "5703788864:AAG1SibrUYxlB3C6ZrLmNn9PM8bEx1WE4so";
 
     String EASY = "easy";
     String MEDIUM = "medium";
@@ -30,8 +30,8 @@ public interface BotConstants {
 
     String NEXT = "⏭";
     String PREV = "⏮";
-    String SOLVED = "Solved";
-    String UNSOLVED = "Unsolved";
+    String SOLVED = "SOLVED";
+    String UNSOLVED = "UNSOLVED";
 
     String TEXT = "TEXT";
     String IMAGE = "IMAGE";
@@ -49,5 +49,8 @@ public interface BotConstants {
     }
     default boolean isPrevOrNext(final String callBackData) {
         return callBackData.startsWith(PREV) || callBackData.startsWith(NEXT);
+    }
+    default boolean isProblemSolvedOrUnsolved(final String callBackData){
+        return callBackData.contains(UNSOLVED) || callBackData.contains(SOLVED);
     }
 }
