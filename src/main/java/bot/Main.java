@@ -19,6 +19,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -156,7 +160,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 String topicId = split[OBJECTID];
                 String userPreparation = new UserPreparationDataBase().getUserPreparation(chatId, Integer.parseInt(topicId));
                 InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.getInlineKeyboardMarkup(topicId);
-                EditMessageText editMessageText = BotUtils.buildEditMessage(messageId, chatId, userPreparation,inlineKeyboardMarkup);
+                EditMessageText editMessageText = BotUtils.buildEditMessage( chatId, userPreparation,messageId,inlineKeyboardMarkup);
                 botExecute(MessageType.EDIT_MESSAGE,editMessageText);
             } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null && BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
                 Pair<String, InputFile> pair = getAttachment(callBackData);
@@ -201,7 +205,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         }
 
         ProblemDatabase problemDatabase = new ProblemDatabase();
-        String problemListInfo = problemDatabase.getProblemInfo(topicId, Difficulty.valueOf(difficulty), page);
+        String problemListInfo = problemDatabase.getProblemInfo(topicId, Difficulty.valueOf(difficulty), page,chatId);
         List<Problem> problemList = problemDatabase.getProblemByTopicId(
                 Integer.parseInt(topicId),
                 Difficulty.valueOf(difficulty),

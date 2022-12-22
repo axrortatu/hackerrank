@@ -36,6 +36,9 @@ public interface BotConstants {
     String SEPARATOR = "/";
     int PAGE_NUMBER = 3;
 
+    String SOLVED = " ✅SOLVED";
+    String NOT_RESOLVED = " ❌NOT RESOLVED";
+
     String NEXT = "⏭";
     String PREV = "⏮";
 
