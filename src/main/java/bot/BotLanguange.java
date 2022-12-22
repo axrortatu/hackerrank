@@ -9,18 +9,13 @@ public class BotLanguange {
 
 
 
-    public void setLanguange(Long chatId, Boolean isFalseOrTrue, String languangeName){
-        if (USER_LANGUANGE_NAME.containsKey(chatId)){
+    public void setLanguage(Long chatId, Boolean isFalseOrTrue, String languangeName){
                 USER_LANGUANGE_NAME.put(chatId, languangeName);
-        }else{
-                USER_LANGUANGE_NAME.put(chatId, languangeName);
-        }
     }
 
 
-    public String getLanguangeName(Long chatId){
-            String str =  USER_LANGUANGE_NAME.get(chatId);
-            return str;
+    public String getLanguageName(Long chatId){
+        return USER_LANGUANGE_NAME.get(chatId);
     }
 
 }
