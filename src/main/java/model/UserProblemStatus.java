@@ -1,9 +1,6 @@
 package model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import model.base.BaseModel;
 
 import java.sql.ResultSet;
@@ -13,18 +10,24 @@ import java.sql.SQLException;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 
 public class UserProblemStatus extends BaseModel {
-    private Long user_id;
-    private int problem_id;
+
+    private Long  telegram_chat_id;
+    private Integer problemId;
+
+    public UserProblemStatus(ResultSet resultSet) {
+        this.getList(resultSet);
+    }
 
     @Override
     protected void getList(ResultSet resultSet) {
         try {
-            this.user_id = resultSet.getLong("user_id");
-            this.problem_id = resultSet.getInt("problem_id");
+            this.telegram_chat_id = resultSet.getLong("telegram_chat_id");
+            this.problemId = resultSet.getInt("problem_id");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }
