@@ -9,7 +9,8 @@ import java.util.List;
 
 
 public interface BotConstants {
-    String USERNAME = "@hackerrank_project_bot";
+
+    String USERNAME = "hackerrank_project_bot";
     String BOT_TOKEN = "5961284561:AAHYEz4bnzTV5K3gcWhcGYd6EVziwNZIFk4";
 
     String EASY_ENG = "EASY";
@@ -27,7 +28,7 @@ public interface BotConstants {
     String HARD_RUS = "СЛОЖНЫЙ";
     String ALL_RUS = "ВСЕ";
 
-    String START = "/start";
+
     String TOPIC = "topic";
     String PREPARATION = "preparation";
     String TOPIC_UZB = "mavzu";
@@ -46,6 +47,7 @@ public interface BotConstants {
 
 
 
+    String START = "/start";
 
     String TOPIC_ID = "TopicId";
 
@@ -67,8 +69,6 @@ public interface BotConstants {
 
     String NEXT = "⏭";
     String PREV = "⏮";
-    String SOLVE = "SOLVED";
-    String UNSOLVED = "UNSOLVED";
 
     String TEXT = "TEXT";
     String IMAGE = "IMAGE";
