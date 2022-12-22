@@ -1,20 +1,20 @@
 package model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import model.base.BaseModel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class User extends BaseModel {
     private long id;
+    private long chatId;
     private String name;
     private String username;
     private String password;
@@ -30,6 +30,7 @@ public class User extends BaseModel {
     protected void getList(ResultSet resultSet) {
         try {
             this.id = resultSet.getLong("id");
+            this.chatId = resultSet.getLong("chat_id");
             this.name = resultSet.getString("name");
             this.username = resultSet.getString("username");
             this.password = resultSet.getString("password");
@@ -37,5 +38,13 @@ public class User extends BaseModel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public String buildAddUserSQL(User user){
+
+        return user.chatId+",'"+
+                user.getName()+"',"+
+                ((Objects.isNull(user.username))?"null":"'"+user.getUsername())+"',"+
+                "null,null";
     }
 }
