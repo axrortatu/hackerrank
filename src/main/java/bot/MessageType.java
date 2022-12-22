@@ -5,5 +5,6 @@ public enum MessageType {
     DELETE_MESSAGE,
     EDIT_MESSAGE,
     SEND_PHOTO,
-    SEND_DOCUMENT
+    SEND_DOCUMENT,
+    SEND_CONTACT
 }

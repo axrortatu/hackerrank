@@ -9,12 +9,18 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Contact;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +29,7 @@ import java.util.Map;
 
 public class Main extends TelegramLongPollingBot implements BotConstants {
 
-    BotLanguange languange = new BotLanguange();
+    BotLanguange language = new BotLanguange();
 
     BotDifficultyLanguange botDifLang = new BotDifficultyLanguange();
 
@@ -48,18 +54,46 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             String TEXT = message.getText();
             Long CHAT_ID = message.getChatId();
 
-            if (TEXT.equals(START)) {
+            if(BotUtils.USER_STATUS.containsKey(CHAT_ID)){
 
-                SendMessage sendMessage = BotUtils.buildSendMessage(
-                        CHAT_ID,
-                        "welcome our bot !!!",
-                        null,
-                        BotUtils.buildReplyMarkup(List.of("UZB", "RUS", "ENG"), 2)
-                );
-                botExecute(MessageType.SEND_MESSAGE, sendMessage);
+                String value = BotUtils.USER_STATUS.get(CHAT_ID);
+                if(value.equals(BotConstants.SEND_CONTACT)){
+
+                    if (message.hasContact()){
+
+                        Contact contact = message.getContact();
+                        User user = new User();
+                        user.setName(contact.getFirstName()+
+                                ((contact.getLastName()!=null)?"  "+contact.getLastName():""));
+                        user.setUsername(message.getFrom().getUserName());
+                        user.setChatId(message.getChatId());
+                        UserDatabase userDatabase = new UserDatabase();
+                        userDatabase.addObject(user);
+
+                        BotUtils.USER_STATUS.remove(CHAT_ID);
+
+                        sendAfterStart(CHAT_ID);
+
+                    } else {
+                        shareContact(message);
+                        return;
+                    }
+
+                }
+
+            }
+
+            if (TEXT.equals(START)) {
+                User user = new UserDatabase().getUserByID(CHAT_ID);
+                if (user == null){
+                    shareContact(message);
+                    return;
+                }
+
+                sendAfterStart(CHAT_ID);
             }
             else if (TEXT.equals("UZB")) {
-                languange.setLanguange(CHAT_ID, true, "UZB");
+                language.setLanguage(CHAT_ID, true, "UZB");
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "O'zbek tiliga almashdi !!!",
@@ -71,7 +105,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
             else if (TEXT.equals("ENG")) {
-                languange.setLanguange(CHAT_ID, true, "ENG");
+                language.setLanguage(CHAT_ID, true, "ENG");
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "Changed to English !!!",
@@ -83,7 +117,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
             else if (TEXT.equals("RUS")) {
-                languange.setLanguange(CHAT_ID, true, "RUS");
+                language.setLanguage(CHAT_ID, true, "RUS");
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "Перешел на русский !!!",
@@ -97,8 +131,8 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
             else if (TEXT.equals(botDifLang.getThemeType(CHAT_ID)[0])) {
                 String str = "";
-                if (languange.getLanguangeName(CHAT_ID).equals("ENG")) str = "Select topics !";
-                else if (languange.getLanguangeName(CHAT_ID).equals("UZB")) str = "Mavzularni tanlang !";
+                if (language.getLanguangeName(CHAT_ID).equals("ENG")) str = "Select topics !";
+                else if (language.getLanguangeName(CHAT_ID).equals("UZB")) str = "Mavzularni tanlang !";
                 else str = "Выберите темы !";
 
                 InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(
@@ -128,8 +162,8 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 ), 2);
                 EditMessageText editMessageText = BotUtils.buildEditMessage(
                         chatId,
-                        languange.getLanguangeName(chatId).equals("ENG") ? "Select one type of problem" :
-                                languange.getLanguangeName(chatId).equals("UZB") ? "Muammoning bir turini tanlang" :
+                        language.getLanguangeName(chatId).equals("ENG") ? "Select one type of problem" :
+                                language.getLanguangeName(chatId).equals("UZB") ? "Muammoning bir turini tanlang" :
                                         "Bыберите один тип проблемы ",
                         messageId,
                         inlineKeyboardMarkup
@@ -145,7 +179,9 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 } else {
                     test(chatId, messageId, false);
                 }
-            } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null && BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
+            } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null &&
+                    BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
+
                 Pair<String, InputFile> pair = getAttachment(callBackData);
                 SendPhoto sendPhoto = BotUtils.buildSendPhoto(
                         chatId,
@@ -155,6 +191,13 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 botExecute(MessageType.SEND_PHOTO,sendPhoto);
             }
         }
+    }
+
+    private void sendAfterStart(Long chatId) {
+        SendMessage sendMessage = BotUtils.buildSendMessage(chatId,
+                "Now you can challenge your-self.\nLet's begin journey..",
+                null, BotUtils.buildReplyMarkup(List.of("UZB", "RUS", "ENG"), 2));
+        botExecute(MessageType.SEND_MESSAGE,sendMessage);
     }
 
 
@@ -236,6 +279,24 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         }
 
         return new Pair<>(decription, inputFile);
+    }
+
+    private void shareContact(Message message) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(message.getChatId());
+        sendMessage.setText("Please share your Contact as a log in method to use bot!");
+        KeyboardButton button = new KeyboardButton();
+        button.setText(BotConstants.SHARE_CONTACT);
+        button.setRequestContact(true);
+        KeyboardRow row = new KeyboardRow();
+        row.add(button);
+        ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup(new ArrayList<>(List.of(row)));
+        markup.setOneTimeKeyboard(true);
+        markup.setResizeKeyboard(true);
+        markup.setSelective(true);
+        sendMessage.setReplyMarkup(markup);
+        botExecute(MessageType.SEND_MESSAGE,sendMessage);
+        BotUtils.USER_STATUS.put(message.getChatId(),BotConstants.SEND_CONTACT);
     }
 
 
