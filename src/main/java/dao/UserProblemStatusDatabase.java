@@ -64,24 +64,27 @@ public class UserProblemStatusDatabase extends BaseDatabaseConnection implements
     }
 
     public boolean binarySearchUserSolvedList(List<UserProblemStatus> statusList, int problemID) {
-//        int first = 0;
-//        int last = statusList.size();
-//        int mid = (first + last) / 2;
-//        while (first <= last) {
-//            if (statusList.get(mid).getProblemId() < problemID) {
-//                first = mid + 1;
-//            } else if (statusList.get(mid).getProblemId() == problemID) {
-//                return true;
-//            } else {
-//                last = mid - 1;
-//            }
-//            mid = (first + last) / 2;
-//        }
-        for (UserProblemStatus userProblemStatus : statusList) {
-            if(userProblemStatus.getProblemId() == problemID){
-                return true;
-            }
+        if (statusList.isEmpty()) {
+            return false;
         }
+        int first = 0;
+        int last = statusList.size();
+        int mid = (first + last) / 2;
+        while (first <= last) {
+            if (statusList.get(mid).getProblemId() < problemID) {
+                first = mid + 1;
+            } else if (statusList.get(mid).getProblemId() == problemID) {
+                return true;
+            } else {
+                last = mid - 1;
+            }
+            mid = (first + last) / 2;
+        }
+//        for (UserProblemStatus userProblemStatus : statusList) {
+//            if(userProblemStatus.getProblemId() == problemID){
+//                return true;
+//            }
+//        }
         return false;
     }
 }
