@@ -20,7 +20,8 @@ public class UserDatabase extends BaseDatabaseConnection implements BaseDatabase
         try{
             connection = getConnection();
             statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("select add_user(" + user.buildAddUserSQL() + ")");
+            ResultSet resultSet = statement.executeQuery("select add_user(" + user.buildAddUserSQL(user) + ")");
+            resultSet.next();
             return resultSet.getBoolean(1);
         }catch (SQLException e){
             e.printStackTrace();
@@ -39,7 +40,7 @@ public class UserDatabase extends BaseDatabaseConnection implements BaseDatabase
         try{
             connection = getConnection();
             statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("select * from get_user()");
+            ResultSet resultSet = statement.executeQuery("select * from get_users()");
             List<User> userList = new ArrayList<>();
             while (resultSet.next()){
                userList.add(new User(resultSet));
