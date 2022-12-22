@@ -95,7 +95,7 @@ public abstract class BotUtils implements BotConstants {
             } else if (object instanceof Problem problem) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(index + 1));
-                button.setCallbackData(String.valueOf(problem.getId()));
+                button.setCallbackData(SEND_QUESTION_CONTENT+SEPARATOR+String.valueOf(problem.getId()));
                 inlineKeyboardButtons.add(button);
                 if (index + 1 == objectList.size()) {
                     list.add(inlineKeyboardButtons);

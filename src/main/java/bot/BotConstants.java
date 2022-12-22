@@ -31,6 +31,7 @@ public interface BotConstants {
     int OBJECTID = 1;
     int DIFFICULTY = 2;
     String SEPARATOR = "/";
+    String SEND_QUESTION_CONTENT = "SEND_QUESTION_CONTENT123";
     int PAGE_NUMBER = 3;
 
     String NEXT = "⏭";
