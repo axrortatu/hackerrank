@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 public class UserProblemStatus extends BaseModel {
 
-    private Long telegram_chat_id;
+    private Long  telegram_chat_id;
     private Integer problemId;
 
     public UserProblemStatus(ResultSet resultSet) {

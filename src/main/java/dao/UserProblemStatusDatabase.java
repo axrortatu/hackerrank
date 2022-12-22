@@ -58,7 +58,6 @@ public class UserProblemStatusDatabase extends BaseDatabaseConnection implements
     }
     public boolean isSolved(long chatId, int id){
         List<UserProblemStatus> statuses = getObjectList();
-
         for (UserProblemStatus u:statuses) {
             if(u.getTelegram_chat_id()==chatId && u.getProblemId()==id){
                 return true;
