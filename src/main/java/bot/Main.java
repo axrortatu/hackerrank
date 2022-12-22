@@ -18,9 +18,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-
 import java.util.*;
 
 
@@ -51,16 +48,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             Long CHAT_ID = message.getChatId();
 
             if (message.hasContact()){
-                Contact contact = message.getContact();
-                User user = new User();
-                user.setName(contact.getFirstName()+
-                        ((contact.getLastName()!=null)?"  "+contact.getLastName():""));
-                user.setUsername(message.getFrom().getUserName());
-                user.setChatId(message.getChatId());
-                UserDatabase userDatabase = new UserDatabase();
-                userDatabase.addObject(user);
-
-                sendAfterStart(CHAT_ID);
+                addNewUser(message);
             }
 
             if (TEXT.equals(START)) {
@@ -239,6 +227,18 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
         pageNumberList.put(chatId, (PREV + SEPARATOR + topicId + SEPARATOR + difficulty + SEPARATOR + page));
         botExecute(MessageType.EDIT_MESSAGE, editMessageText);
+    }
+    private void addNewUser(Message message) {
+        Contact contact = message.getContact();
+        User user = new User();
+        user.setName(contact.getFirstName()+
+                     ((contact.getLastName()!=null)?"  "+contact.getLastName():""));
+        user.setUsername(message.getFrom().getUserName());
+        user.setChatId(message.getChatId());
+        UserDatabase userDatabase = new UserDatabase();
+        userDatabase.addObject(user);
+
+        sendAfterStart(message.getChatId());
     }
 
 
