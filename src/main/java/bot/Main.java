@@ -3,13 +3,10 @@ package bot;
 import bot.utils.BotUtils;
 import bot.utils.FilesUtil;
 import common.Pair;
-import dao.ProblemDatabase;
-import dao.TopicDatabase;
-import dao.UserPreparationDataBase;
+import dao.*;
 import model.Difficulty;
 import model.Problem;
-import dao.*;
-import model.*;
+import model.User;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -23,7 +20,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.*;
 
@@ -50,79 +46,80 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage()) {
-
             Message message = update.getMessage();
             String TEXT = message.getText();
             Long CHAT_ID = message.getChatId();
 
-            if (BotUtils.USER_STATUS.containsKey(CHAT_ID)) {
+            if (message.hasContact()){
+                Contact contact = message.getContact();
+                User user = new User();
+                user.setName(contact.getFirstName()+
+                        ((contact.getLastName()!=null)?"  "+contact.getLastName():""));
+                user.setUsername(message.getFrom().getUserName());
+                user.setChatId(message.getChatId());
+                UserDatabase userDatabase = new UserDatabase();
+                userDatabase.addObject(user);
 
-                String value = BotUtils.USER_STATUS.get(CHAT_ID);
-                if (value.equals(BotConstants.SEND_CONTACT)) {
-
-                    if (message.hasContact()) {
-
-                        Contact contact = message.getContact();
-                        User user = new User();
-                        user.setName(contact.getFirstName() +
-                                ((contact.getLastName() != null) ? "  " + contact.getLastName() : ""));
-                        user.setUsername(message.getFrom().getUserName());
-                        user.setChatId(message.getChatId());
-                        UserDatabase userDatabase = new UserDatabase();
-                        userDatabase.addObject(user);
-
-                        BotUtils.USER_STATUS.remove(CHAT_ID);
-
-                        sendAfterStart(CHAT_ID);
-
-                    } else {
-                        shareContact(message);
-                        return;
-                    }
-
-                }
-
+                SendMessage sendMessage = BotUtils.buildSendMessage(
+                        CHAT_ID,
+                        "welcome",
+                        null,
+                        BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2, false)
+                );
+                botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
 
             if (TEXT.equals(START)) {
                 User user = new UserDatabase().getUserByID(CHAT_ID);
-                if (user == null) {
-                    shareContact(message);
-                    return;
+                if (Objects.isNull(user)) {
+                    ReplyKeyboardMarkup replyKeyboardMarkup
+                            = BotUtils.buildReplyMarkup(List.of(SHARE_CONTACT), 1, true);
+                    SendMessage sendMessage = BotUtils.buildSendMessage(
+                            CHAT_ID,
+                            "to continue you should send your contact",
+                            null,
+                            replyKeyboardMarkup
+                    );
+                    botExecute(MessageType.SEND_MESSAGE, sendMessage);
                 }
-
-                sendAfterStart(CHAT_ID);
+                SendMessage sendMessage = BotUtils.buildSendMessage(
+                        CHAT_ID,
+                        "welcome",
+                        null,
+                        BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2, false)
+                );
+                botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals("UZB")) {
                 language.setLanguage(CHAT_ID, true, "UZB");
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "O'zbek tiliga almashdi !!!",
                         null,
-                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
+                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2, false)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals(ENG)) {
-                languange.setLanguange(CHAT_ID, true, ENG);
+                language.setLanguage(CHAT_ID, true, ENG);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "Changed to English !!!",
                         null,
-                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
+                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2, false)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals(RUS)) {
-                languange.setLanguange(CHAT_ID, true, RUS);
+                language.setLanguage(CHAT_ID, true, RUS);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "Перешел на русский !!!",
                         null,
-                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
+                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2, false)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals(botDifLang.getThemeType(CHAT_ID).get(0))) {
                 String str = "";
-                if (languange.getLanguangeName(CHAT_ID).equals(ENG)) str = "Select topics !";
-                else if (languange.getLanguangeName(CHAT_ID).equals(UZB)) str = "Mavzularni tanlang !";
+                if (language.getLanguageName(CHAT_ID).equals(ENG)) str = "Select topics !";
+                else if (language.getLanguageName(CHAT_ID).equals(UZB)) str = "Mavzularni tanlang !";
 
                 else str = "Выберите темы !";
 
@@ -153,8 +150,8 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         botDifLang.getDifficultyType(chatId, Integer.parseInt(topicId)), 2);
                 EditMessageText editMessageText = BotUtils.buildEditMessage(
                         chatId,
-                        languange.getLanguangeName(chatId).equals(ENG) ? "Select one type of problem" :
-                                languange.getLanguangeName(chatId).equals(UZB) ? "Muammoning bir turini tanlang" :
+                        language.getLanguageName(chatId).equals(ENG) ? "Select one type of problem" :
+                                language.getLanguageName(chatId).equals(UZB) ? "Muammoning bir turini tanlang" :
 
                                         "Bыберите один тип проблемы ",
                         messageId,
@@ -194,15 +191,8 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 botExecute(MessageType.SEND_PHOTO, sendPhoto);
             }
         }
-    }
 
-    private void sendAfterStart(Long chatId) {
-        SendMessage sendMessage = BotUtils.buildSendMessage(chatId,
-                "Now you can challenge your-self.\nLet's begin journey..",
-                null, BotUtils.buildReplyMarkup(List.of("UZB", "RUS", "ENG"), 2));
-        botExecute(MessageType.SEND_MESSAGE, sendMessage);
     }
-
 
     private void botExecute(MessageType messageType, Object object) {
         try {

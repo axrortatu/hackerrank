@@ -14,7 +14,7 @@ public class BotLanguange {
     }
 
 
-    public String getLanguangeName(Long chatId){
+    public String getLanguageName(Long chatId){
         return USER_LANGUANGE_NAME.get(chatId);
     }
 
