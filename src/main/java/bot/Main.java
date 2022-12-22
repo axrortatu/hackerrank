@@ -3,30 +3,30 @@ package bot;
 import bot.utils.BotUtils;
 import bot.utils.FilesUtil;
 import common.Pair;
-import dao.ProblemDatabase;
-import dao.TopicDatabase;
-import dao.UserPreparationDataBase;
+import dao.*;
 import model.Difficulty;
 import model.Problem;
-import dao.*;
-import model.*;
+import model.User;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.Contact;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.*;
 
 
 public class Main extends TelegramLongPollingBot implements BotConstants {
 
-    BotLanguange languange = new BotLanguange();
+    BotLanguange language = new BotLanguange();
 
     BotDifficultyLanguange botDifLang = new BotDifficultyLanguange();
 
@@ -46,50 +46,80 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage()) {
-
             Message message = update.getMessage();
             String TEXT = message.getText();
             Long CHAT_ID = message.getChatId();
 
-            if (TEXT.equals(START)) {
+            if (message.hasContact()){
+                Contact contact = message.getContact();
+                User user = new User();
+                user.setName(contact.getFirstName()+
+                        ((contact.getLastName()!=null)?"  "+contact.getLastName():""));
+                user.setUsername(message.getFrom().getUserName());
+                user.setChatId(message.getChatId());
+                UserDatabase userDatabase = new UserDatabase();
+                userDatabase.addObject(user);
+
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
-                        "welcome our bot !!!",
+                        "welcome",
                         null,
-                        BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2)
+                        BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2, false)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            } else if (TEXT.equals(UZB)) {
-                languange.setLanguange(CHAT_ID, true, UZB);
+            }
+
+            if (TEXT.equals(START)) {
+                User user = new UserDatabase().getUserByID(CHAT_ID);
+                if (Objects.isNull(user)) {
+                    ReplyKeyboardMarkup replyKeyboardMarkup
+                            = BotUtils.buildReplyMarkup(List.of(SHARE_CONTACT), 1, true);
+                    SendMessage sendMessage = BotUtils.buildSendMessage(
+                            CHAT_ID,
+                            "to continue you should send your contact",
+                            null,
+                            replyKeyboardMarkup
+                    );
+                    botExecute(MessageType.SEND_MESSAGE, sendMessage);
+                }
+                SendMessage sendMessage = BotUtils.buildSendMessage(
+                        CHAT_ID,
+                        "welcome",
+                        null,
+                        BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2, false)
+                );
+                botExecute(MessageType.SEND_MESSAGE, sendMessage);
+            } else if (TEXT.equals("UZB")) {
+                language.setLanguage(CHAT_ID, true, "UZB");
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "O'zbek tiliga almashdi !!!",
                         null,
-                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
+                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2, false)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals(ENG)) {
-                languange.setLanguange(CHAT_ID, true, ENG);
+                language.setLanguage(CHAT_ID, true, ENG);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "Changed to English !!!",
                         null,
-                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
+                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2, false)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals(RUS)) {
-                languange.setLanguange(CHAT_ID, true, RUS);
+                language.setLanguage(CHAT_ID, true, RUS);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "Перешел на русский !!!",
                         null,
-                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
+                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2, false)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals(botDifLang.getThemeType(CHAT_ID).get(0))) {
                 String str = "";
-                if (languange.getLanguangeName(CHAT_ID).equals(ENG)) str = "Select topics !";
-                else if (languange.getLanguangeName(CHAT_ID).equals(UZB)) str = "Mavzularni tanlang !";
+                if (language.getLanguageName(CHAT_ID).equals(ENG)) str = "Select topics !";
+                else if (language.getLanguageName(CHAT_ID).equals(UZB)) str = "Mavzularni tanlang !";
 
                 else str = "Выберите темы !";
 
@@ -120,8 +150,8 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         botDifLang.getDifficultyType(chatId, Integer.parseInt(topicId)), 2);
                 EditMessageText editMessageText = BotUtils.buildEditMessage(
                         chatId,
-                        languange.getLanguangeName(chatId).equals(ENG) ? "Select one type of problem" :
-                                languange.getLanguangeName(chatId).equals(UZB) ? "Muammoning bir turini tanlang" :
+                        language.getLanguageName(chatId).equals(ENG) ? "Select one type of problem" :
+                                language.getLanguageName(chatId).equals(UZB) ? "Muammoning bir turini tanlang" :
 
                                         "Bыберите один тип проблемы ",
                         messageId,
@@ -161,8 +191,8 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 botExecute(MessageType.SEND_PHOTO, sendPhoto);
             }
         }
-    }
 
+    }
 
     private void botExecute(MessageType messageType, Object object) {
         try {
@@ -194,7 +224,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         }
 
         ProblemDatabase problemDatabase = new ProblemDatabase();
-        String problemListInfo = problemDatabase.getProblemInfo(topicId, Difficulty.valueOf(difficulty), page,chatId);
+        String problemListInfo = problemDatabase.getProblemInfo(topicId, Difficulty.valueOf(difficulty), page, chatId);
         List<Problem> problemList = problemDatabase.getProblemByTopicId(
                 Integer.parseInt(topicId),
                 Difficulty.valueOf(difficulty),

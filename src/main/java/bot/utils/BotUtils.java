@@ -23,7 +23,7 @@ public abstract class BotUtils implements BotConstants {
     public static Scanner numberScan = new Scanner(System.in);
     public static Scanner textScan = new Scanner(System.in);
 
-    public static ReplyKeyboardMarkup buildReplyMarkup(final List<String> menuList, final int column) {
+    public static ReplyKeyboardMarkup buildReplyMarkup(final List<String> menuList, final int column, boolean isContactRequest) {
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setResizeKeyboard(true);
         replyKeyboardMarkup.setSelective(true);
@@ -31,8 +31,13 @@ public abstract class BotUtils implements BotConstants {
         replyKeyboardMarkup.setKeyboard(keyboardRowList);
 
         KeyboardRow keyboardRow = new KeyboardRow();
+
         for (int i = 0; i < menuList.size(); i++) {
-            keyboardRow.add(new KeyboardButton(menuList.get(i)));
+            KeyboardButton button = new KeyboardButton(menuList.get(i));
+            if (isContactRequest){
+                button.setRequestContact(true);
+            }
+            keyboardRow.add(button);
             if (i % column == 0) {
                 keyboardRowList.add(keyboardRow);
                 keyboardRow = new KeyboardRow();
@@ -41,6 +46,8 @@ public abstract class BotUtils implements BotConstants {
         if (!keyboardRow.isEmpty()) {
             keyboardRowList.add(keyboardRow);
         }
+
+
         return replyKeyboardMarkup;
     }
 
@@ -71,8 +78,8 @@ public abstract class BotUtils implements BotConstants {
         return editMessage;
     }
 
-    public static SendPhoto buildSendPhoto(Long chatId, String captionText, InputFile inputFile){
-        SendPhoto sendPhoto  = new SendPhoto(chatId.toString(), inputFile);
+    public static SendPhoto buildSendPhoto(Long chatId, String captionText, InputFile inputFile) {
+        SendPhoto sendPhoto = new SendPhoto(chatId.toString(), inputFile);
         sendPhoto.setCaption(captionText);
         return sendPhoto;
     }
@@ -128,12 +135,13 @@ public abstract class BotUtils implements BotConstants {
         }
         return list;
     }
+
     public static List<List<InlineKeyboardButton>> getInlineKeyboardRowListOfTopic(List<Object> objectList, int column) {
         List<List<InlineKeyboardButton>> list = new ArrayList<>();
         List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
         int index = 0;
         for (Object o : objectList) {
-            if(o instanceof Topic topic){
+            if (o instanceof Topic topic) {
                 InlineKeyboardButton button = new InlineKeyboardButton();
                 button.setText(String.valueOf(index + 1));
                 button.setCallbackData(TOPIC_ID + SEPARATOR + topic.getId());
@@ -150,6 +158,7 @@ public abstract class BotUtils implements BotConstants {
         }
         return list;
     }
+
     public static InlineKeyboardMarkup getInlineKeyboardMarkup(String topicId) {
         List<List<InlineKeyboardButton>> list = new ArrayList<>();
         List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
