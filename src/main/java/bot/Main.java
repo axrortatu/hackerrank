@@ -120,8 +120,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         inlineKeyboardMarkup,
                         null
                 );
-                        null
-                );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             } else if (TEXT.equals(PREPARATION)) {
                 InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(
@@ -180,23 +178,12 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                     pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
                     test(chatId, messageId, true);
                     BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
-                } else if (isPrevOrNext(callBackData)) {
+                } else if (isPagination(callBackData)) {
                     if (callBackData.startsWith(PREV)) {
                         test(chatId, messageId, true);
                     } else {
                         test(chatId, messageId, false);
                     }
-                } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null &&
-                        BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
-
-
-                    Pair<String, InputFile> pair = getAttachment(callBackData);
-                    SendPhoto sendPhoto = BotUtils.buildSendPhoto(
-                            chatId,
-                            pair.getKey(),
-                            pair.getValue()
-                    );
-                    botExecute(MessageType.SEND_PHOTO, sendPhoto);
                 }
             } else if (isProblem(callBackData)) {
                 pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
@@ -243,7 +230,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         );
         botExecute(MessageType.SEND_MESSAGE, sendMessage);
         }
-    }
 
     private void botExecute(MessageType messageType, Object object) {
         try {
