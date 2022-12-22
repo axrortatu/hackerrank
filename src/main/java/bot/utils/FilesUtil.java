@@ -21,7 +21,6 @@ public class FilesUtil {
         InputFile inputFile = null;
         String decription = null;
 
-
         for (Question question : questions) {
             if (question.getType().equals(BotConstants.IMAGE)) {
                 Attachment attachment = new AttachmentDatabase().getObjectById(question.getAttachmentId());
