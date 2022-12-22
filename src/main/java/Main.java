@@ -42,16 +42,13 @@ public class Main {
                     Question question = new Question();
                     Attachment attachment = new Attachment();
                     AttachmentContent attachmentContent = new AttachmentContent();
-
                     System.out.print("Problem id ni kiriting: ");
                     question.setProblemId(BotUtils.numberScan.nextInt());
                     System.out.println("Savol turini tanlang (1-image/2-text): ");
                     int number = BotUtils.numberScan.nextInt();
                     if (number == 1) {
                         question.setType("IMAGE");
-
                         try {
-
                             System.out.println("File urlini kiriting:  ");
                             String file = BotUtils.textScan.nextLine();
                             System.out.println("Fileni nomini kiriting: ");
@@ -78,7 +75,5 @@ public class Main {
                 }
             }
         }
-        }
     }
-
-
+}
