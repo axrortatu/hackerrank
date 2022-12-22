@@ -50,56 +50,49 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             Long CHAT_ID = message.getChatId();
 
             if (TEXT.equals(START)) {
-
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "welcome our bot !!!",
                         null,
-                        BotUtils.buildReplyMarkup(List.of("UZB", "RUS", "ENG"), 2)
+                        BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
-            else if (TEXT.equals("UZB")) {
-                languange.setLanguange(CHAT_ID, true, "UZB");
+            else if (TEXT.equals(UZB)) {
+                languange.setLanguange(CHAT_ID, true, UZB);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "O'zbek tiliga almashdi !!!",
                         null,
-                        BotUtils.buildReplyMarkup(List.of(botDifLang.getThemeType(CHAT_ID)[0],
-                                botDifLang.getThemeType(CHAT_ID)[1],
-                                botDifLang.getThemeType(CHAT_ID)[2]), 2)
+                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
-            else if (TEXT.equals("ENG")) {
-                languange.setLanguange(CHAT_ID, true, "ENG");
+            else if (TEXT.equals(ENG)) {
+                languange.setLanguange(CHAT_ID, true, ENG);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "Changed to English !!!",
                         null,
-                        BotUtils.buildReplyMarkup(List.of(botDifLang.getThemeType(CHAT_ID)[0],
-                                botDifLang.getThemeType(CHAT_ID)[1],
-                                botDifLang.getThemeType(CHAT_ID)[2]), 2)
+                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
-            else if (TEXT.equals("RUS")) {
-                languange.setLanguange(CHAT_ID, true, "RUS");
+            else if (TEXT.equals(RUS)) {
+                languange.setLanguange(CHAT_ID, true, RUS);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "Перешел на русский !!!",
                         null,
-                        BotUtils.buildReplyMarkup(List.of(botDifLang.getThemeType(CHAT_ID)[0],
-                                botDifLang.getThemeType(CHAT_ID)[1],
-                                botDifLang.getThemeType(CHAT_ID)[2]),2)
+                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID),2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
-
-            else if (TEXT.equals(botDifLang.getThemeType(CHAT_ID)[0])) {
+            else if (TEXT.equals(botDifLang.getThemeType(CHAT_ID).get(0))) {
                 String str = "";
-                if (languange.getLanguangeName(CHAT_ID).equals("ENG")) str = "Select topics !";
-                else if (languange.getLanguangeName(CHAT_ID).equals("UZB")) str = "Mavzularni tanlang !";
+                if (languange.getLanguangeName(CHAT_ID).equals(ENG)) str = "Select topics !";
+                else if (languange.getLanguangeName(CHAT_ID).equals(UZB)) str = "Mavzularni tanlang !";
+
                 else str = "Выберите темы !";
 
                 InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(
@@ -117,7 +110,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 SendMessage sendMessage = BotUtils.buildSendMessage(CHAT_ID, new TopicDatabase().getTopics(), inlineKeyboardMarkup,null);
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
-
         } else if (update.hasCallbackQuery()) {
             String callBackData = update.getCallbackQuery().getData();
             Message callBackMessage = update.getCallbackQuery().getMessage();
@@ -126,16 +118,13 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
             if (isTopic(callBackData)) {
                 String topicId = callBackData.substring(TOPIC.length());
-                InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(List.of(
-                        new Pair<>(botDifLang.getDifficultyType(chatId)[0], topicId),
-                        new Pair<>(botDifLang.getDifficultyType(chatId)[1], topicId),
-                        new Pair<>(botDifLang.getDifficultyType(chatId)[2], topicId),
-                        new Pair<>(botDifLang.getDifficultyType(chatId)[3], topicId)
-                ), 2);
+                InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(
+                        botDifLang.getDifficultyType(chatId, Integer.parseInt(topicId)), 2);
                 EditMessageText editMessageText = BotUtils.buildEditMessage(
                         chatId,
-                        languange.getLanguangeName(chatId).equals("ENG") ? "Select one type of problem" :
-                                languange.getLanguangeName(chatId).equals("UZB") ? "Muammoning bir turini tanlang" :
+                        languange.getLanguangeName(chatId).equals(ENG) ? "Select one type of problem" :
+                                languange.getLanguangeName(chatId).equals(UZB) ? "Muammoning bir turini tanlang" :
+
                                         "Bыберите один тип проблемы ",
                         messageId,
                         inlineKeyboardMarkup
