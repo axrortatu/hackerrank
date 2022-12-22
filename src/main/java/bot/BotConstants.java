@@ -75,7 +75,6 @@ public interface BotConstants {
     String IMAGE = "IMAGE";
 
     HashMap<Long, String> USER_STATUS = new HashMap<>();
-    HashMap<Long, String> ADMIN_SEND_QUESTION_CONTENT = new HashMap<>();
     String ADMIN_SEND_QUESTION = "ADMIN_SEND_QUESTION";
     String SEND_CONTACT = "share_contact";
     String SHARE_CONTACT = "SHARE CONTACT";

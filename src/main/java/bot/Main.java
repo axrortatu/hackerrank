@@ -131,7 +131,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             } else if (isProblem(callBackData)) {
                 pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
                 test(chatId, messageId, true);
-                BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
             } else if (isPrevOrNext(callBackData)) {
                 if (callBackData.startsWith(PREV)) {
                     test(chatId, messageId, true);
@@ -151,8 +150,9 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                                 inlineKeyboardMarkup
                         );
                 botExecute(MessageType.EDIT_MESSAGE, editMessageText);
-            } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null && BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
-                Pair<String, InputFile> pair = FilesUtil.getPair(new QuestionDatabase().getObjectList(Integer.parseInt(callBackData)));
+            } else if (callBackData.startsWith(SEND_QUESTION_CONTENT)) {
+                String problemId = callBackData.split(SEPARATOR)[1];
+                Pair<String, InputFile> pair = FilesUtil.getPair(new QuestionDatabase().getObjectList(Integer.parseInt(problemId)));
                 SendPhoto sendPhoto = BotUtils.buildSendPhoto(
                         chatId,
                         pair.getKey(),
