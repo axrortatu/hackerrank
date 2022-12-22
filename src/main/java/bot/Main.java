@@ -55,17 +55,17 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             String TEXT = message.getText();
             Long CHAT_ID = message.getChatId();
 
-            if(BotUtils.USER_STATUS.containsKey(CHAT_ID)){
+            if (BotUtils.USER_STATUS.containsKey(CHAT_ID)) {
 
                 String value = BotUtils.USER_STATUS.get(CHAT_ID);
-                if(value.equals(BotConstants.SEND_CONTACT)){
+                if (value.equals(BotConstants.SEND_CONTACT)) {
 
-                    if (message.hasContact()){
+                    if (message.hasContact()) {
 
                         Contact contact = message.getContact();
                         User user = new User();
-                        user.setName(contact.getFirstName()+
-                                ((contact.getLastName()!=null)?"  "+contact.getLastName():""));
+                        user.setName(contact.getFirstName() +
+                                ((contact.getLastName() != null) ? "  " + contact.getLastName() : ""));
                         user.setUsername(message.getFrom().getUserName());
                         user.setChatId(message.getChatId());
                         UserDatabase userDatabase = new UserDatabase();
@@ -86,14 +86,13 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
             if (TEXT.equals(START)) {
                 User user = new UserDatabase().getUserByID(CHAT_ID);
-                if (user == null){
+                if (user == null) {
                     shareContact(message);
                     return;
                 }
 
                 sendAfterStart(CHAT_ID);
-            }
-            else if (TEXT.equals("UZB")) {
+            } else if (TEXT.equals("UZB")) {
                 language.setLanguage(CHAT_ID, true, "UZB");
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
@@ -201,7 +200,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         SendMessage sendMessage = BotUtils.buildSendMessage(chatId,
                 "Now you can challenge your-self.\nLet's begin journey..",
                 null, BotUtils.buildReplyMarkup(List.of("UZB", "RUS", "ENG"), 2));
-        botExecute(MessageType.SEND_MESSAGE,sendMessage);
+        botExecute(MessageType.SEND_MESSAGE, sendMessage);
     }
 
 
@@ -235,7 +234,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         }
 
         ProblemDatabase problemDatabase = new ProblemDatabase();
-        String problemListInfo = problemDatabase.getProblemInfo(topicId, Difficulty.valueOf(difficulty), page,chatId);
+        String problemListInfo = problemDatabase.getProblemInfo(topicId, Difficulty.valueOf(difficulty), page, chatId);
         List<Problem> problemList = problemDatabase.getProblemByTopicId(
                 Integer.parseInt(topicId),
                 Difficulty.valueOf(difficulty),
