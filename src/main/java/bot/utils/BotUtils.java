@@ -5,7 +5,9 @@ import common.Pair;
 import model.Problem;
 import model.Topic;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -14,8 +16,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public abstract class BotUtils implements BotConstants {
+    public static final String SHARE_CONTACT = "share_contact";
+    public static Scanner numberScan = new Scanner(System.in);
+    public static Scanner textScan = new Scanner(System.in);
 
     public static ReplyKeyboardMarkup buildReplyMarkup(final List<String> menuList, final int column) {
         final ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
@@ -56,7 +62,7 @@ public abstract class BotUtils implements BotConstants {
         return sendMessage;
     }
 
-    public static EditMessageText buildEditMessage(Integer messageId, Long chatId, String text, InlineKeyboardMarkup i) {
+    public static EditMessageText buildEditMessage(Long chatId, String text, Integer messageId, InlineKeyboardMarkup i) {
         EditMessageText editMessage = new EditMessageText(text);
         editMessage.setMessageId(messageId);
         editMessage.setChatId(chatId);
@@ -64,6 +70,12 @@ public abstract class BotUtils implements BotConstants {
             editMessage.setReplyMarkup(i);
         }
         return editMessage;
+    }
+
+    public static SendPhoto buildSendPhoto(Long chatId, String captionText, InputFile inputFile){
+        SendPhoto sendPhoto  = new SendPhoto(chatId.toString(), inputFile);
+        sendPhoto.setCaption(captionText);
+        return sendPhoto;
     }
 
     private static List<List<InlineKeyboardButton>> getInlineKeyboardRowList(List<Object> objectList, int column) {
@@ -117,6 +129,37 @@ public abstract class BotUtils implements BotConstants {
         }
         return list;
     }
-
-
+    public static List<List<InlineKeyboardButton>> getInlineKeyboardRowListOfTopic(List<Object> objectList, int column) {
+        List<List<InlineKeyboardButton>> list = new ArrayList<>();
+        List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        int index = 0;
+        for (Object o : objectList) {
+            if(o instanceof Topic topic){
+                InlineKeyboardButton button = new InlineKeyboardButton();
+                button.setText(String.valueOf(index + 1));
+                button.setCallbackData(TOPIC_ID + SEPARATOR + topic.getId());
+                inlineKeyboardButtons.add(button);
+            }
+            if ((index + 1) % column == 0) {
+                list.add(inlineKeyboardButtons);
+                inlineKeyboardButtons = new ArrayList<>();
+            }
+            index++;
+        }
+        if (!inlineKeyboardButtons.isEmpty()) {
+            list.add(inlineKeyboardButtons);
+        }
+        return list;
+    }
+    public static InlineKeyboardMarkup getInlineKeyboardMarkup(String topicId) {
+        List<List<InlineKeyboardButton>> list = new ArrayList<>();
+        List<InlineKeyboardButton> inlineKeyboardButtons = new ArrayList<>();
+        InlineKeyboardButton button = new InlineKeyboardButton();
+        button.setText(BotConstants.CONTINUE);
+        button.setCallbackData(TOPIC + topicId);
+        inlineKeyboardButtons.add(button);
+        list.add(inlineKeyboardButtons);
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(list);
+        return inlineKeyboardMarkup;
+    }
 }
