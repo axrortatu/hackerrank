@@ -60,13 +60,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 UserDatabase userDatabase = new UserDatabase();
                 userDatabase.addObject(user);
 
-                SendMessage sendMessage = BotUtils.buildSendMessage(
-                        CHAT_ID,
-                        "welcome",
-                        null,
-                        BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2, false)
-                );
-                botExecute(MessageType.SEND_MESSAGE, sendMessage);
+                sendAfterStart(CHAT_ID);
             }
 
             if (TEXT.equals(START)) {
@@ -81,15 +75,10 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                             replyKeyboardMarkup
                     );
                     botExecute(MessageType.SEND_MESSAGE, sendMessage);
+                }else {
+                    sendAfterStart(CHAT_ID);
                 }
-                SendMessage sendMessage = BotUtils.buildSendMessage(
-                        CHAT_ID,
-                        "welcome",
-                        null,
-                        BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2, false)
-                );
-                botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            } else if (TEXT.equals("UZB")) {
+            } else if (TEXT.equals(UZB)) {
                 language.setLanguage(CHAT_ID, true, "UZB");
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
@@ -192,6 +181,16 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             }
         }
 
+    }
+
+    private void sendAfterStart(Long chat_id) {
+        SendMessage sendMessage = BotUtils.buildSendMessage(
+                chat_id,
+                "welcome",
+                null,
+                BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2, false)
+        );
+        botExecute(MessageType.SEND_MESSAGE, sendMessage);
     }
 
     private void botExecute(MessageType messageType, Object object) {

@@ -11,21 +11,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class UserDatabase extends BaseDatabaseConnection implements BaseDatabase<User>{
+public class UserDatabase extends BaseDatabaseConnection implements BaseDatabase<User> {
 
     @Override
     public boolean addObject(User user) {
         Connection connection = null;
         Statement statement = null;
-        try{
+        try {
             connection = getConnection();
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select add_user(" + user.buildAddUserSQL(user) + ")");
             resultSet.next();
             return resultSet.getBoolean(1);
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             if (Objects.nonNull(connection) && Objects.nonNull(statement)) {
                 closeConnection(connection, statement);
             }
@@ -37,18 +37,18 @@ public class UserDatabase extends BaseDatabaseConnection implements BaseDatabase
     public List<User> getObjectList() {
         Connection connection = null;
         Statement statement = null;
-        try{
+        try {
             connection = getConnection();
             statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from get_users()");
             List<User> userList = new ArrayList<>();
-            while (resultSet.next()){
-               userList.add(new User(resultSet));
+            while (resultSet.next()) {
+                userList.add(new User(resultSet));
             }
             return userList;
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             if (Objects.nonNull(connection) && Objects.nonNull(statement)) {
                 closeConnection(connection, statement);
             }
@@ -60,7 +60,7 @@ public class UserDatabase extends BaseDatabaseConnection implements BaseDatabase
 
         List<User> users = getObjectList();
 
-        return users.stream().filter(user -> user.getChatId()==chatId)
+        return users.stream().filter(user -> user.getChatId() == chatId)
                 .findFirst().orElse(null);
     }
 }
