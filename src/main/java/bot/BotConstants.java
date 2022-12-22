@@ -49,7 +49,6 @@ public interface BotConstants {
 
     String START = "/start";
 
-    String TOPIC = "topic";
     String TOPIC_ID = "TopicId";
 
     String PROBLEM = "problem";

@@ -1,6 +1,7 @@
 package bot;
 
 import bot.utils.BotUtils;
+import bot.utils.FilesUtil;
 import common.Pair;
 import dao.ProblemDatabase;
 import dao.TopicDatabase;
@@ -19,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+
 import java.util.*;
 
 
@@ -57,8 +59,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            }
-            else if (TEXT.equals(UZB)) {
+            } else if (TEXT.equals(UZB)) {
                 languange.setLanguange(CHAT_ID, true, UZB);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
@@ -67,8 +68,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            }
-            else if (TEXT.equals(ENG)) {
+            } else if (TEXT.equals(ENG)) {
                 languange.setLanguange(CHAT_ID, true, ENG);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
@@ -77,18 +77,16 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            }
-            else if (TEXT.equals(RUS)) {
+            } else if (TEXT.equals(RUS)) {
                 languange.setLanguange(CHAT_ID, true, RUS);
                 SendMessage sendMessage = BotUtils.buildSendMessage(
                         CHAT_ID,
                         "Перешел на русский !!!",
                         null,
-                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID),2)
+                        BotUtils.buildReplyMarkup(botDifLang.getThemeType(CHAT_ID), 2)
                 );
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
-            }
-            else if (TEXT.equals(botDifLang.getThemeType(CHAT_ID).get(0))) {
+            } else if (TEXT.equals(botDifLang.getThemeType(CHAT_ID).get(0))) {
                 String str = "";
                 if (languange.getLanguangeName(CHAT_ID).equals(ENG)) str = "Select topics !";
                 else if (languange.getLanguangeName(CHAT_ID).equals(UZB)) str = "Mavzularni tanlang !";
@@ -107,7 +105,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             } else if (TEXT.equals(PREPARATION)) {
                 InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup(
                         BotUtils.getInlineKeyboardRowListOfTopic(new ArrayList<>(new TopicDatabase().getObjectList()), 3));
-                SendMessage sendMessage = BotUtils.buildSendMessage(CHAT_ID, new TopicDatabase().getTopics(), inlineKeyboardMarkup,null);
+                SendMessage sendMessage = BotUtils.buildSendMessage(CHAT_ID, new TopicDatabase().getTopics(), inlineKeyboardMarkup, null);
                 botExecute(MessageType.SEND_MESSAGE, sendMessage);
             }
         } else if (update.hasCallbackQuery()) {
@@ -145,16 +143,22 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 String topicId = split[OBJECTID];
                 String userPreparation = new UserPreparationDataBase().getUserPreparation(chatId, Integer.parseInt(topicId));
                 InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.getInlineKeyboardMarkup(topicId);
-                EditMessageText editMessageText = BotUtils.buildEditMessage(messageId, chatId, userPreparation,inlineKeyboardMarkup);
-                botExecute(MessageType.EDIT_MESSAGE,editMessageText);
+                EditMessageText editMessageText =
+                        BotUtils.buildEditMessage(
+                                chatId,
+                                userPreparation,
+                                messageId,
+                                inlineKeyboardMarkup
+                        );
+                botExecute(MessageType.EDIT_MESSAGE, editMessageText);
             } else if (BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId) != null && BotConstants.ADMIN_SEND_QUESTION_CONTENT.get(chatId).equals(BotConstants.ADMIN_SEND_QUESTION)) {
-                Pair<String, InputFile> pair = getAttachment(callBackData);
+                Pair<String, InputFile> pair = FilesUtil.getPair(new QuestionDatabase().getObjectList(Integer.parseInt(callBackData)));
                 SendPhoto sendPhoto = BotUtils.buildSendPhoto(
                         chatId,
                         pair.getKey(),
                         pair.getValue()
                 );
-                botExecute(MessageType.SEND_PHOTO,sendPhoto);
+                botExecute(MessageType.SEND_PHOTO, sendPhoto);
             }
         }
     }
@@ -206,36 +210,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
         pageNumberList.put(chatId, (PREV + SEPARATOR + topicId + SEPARATOR + difficulty + SEPARATOR + page));
         botExecute(MessageType.EDIT_MESSAGE, editMessageText);
-    }
-
-
-    private Pair<String, InputFile> getAttachment(final String problemId) {
-        final List<Question> questions = new QuestionDatabase().getObjectList(Integer.valueOf(problemId));
-
-        InputFile inputFile = null;
-        String decription = null;
-
-        for (Question question : questions) {
-            if (question.getType().equals(IMAGE)) {
-                Attachment attachment = new AttachmentDatabase().getObjectById(question.getAttachmentId());
-                AttachmentContent attachmentContent = new AttachmentContantDatabase().getObjectById((int) attachment.getAttachmentId());
-                byte[] contentByte = attachmentContent.getContent();
-
-                if (contentByte != null) {
-                    try (FileOutputStream outputStream = new FileOutputStream("src/image.jpg")) {
-                        outputStream.write(contentByte);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    ByteArrayInputStream inputStream = new ByteArrayInputStream(contentByte);
-                    inputFile = new InputFile(inputStream, "src/image.jpg");
-                }
-            } else if (question.getType().equals(TEXT)) {
-                decription = question.getDescription();
-            }
-        }
-
-        return new Pair<>(decription, inputFile);
     }
 
 
