@@ -1,10 +1,7 @@
 package model;
 
 import common.Pair;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import model.base.BaseModel;
 import model.dto.receive.BaseReceive;
 
@@ -15,6 +12,7 @@ import java.sql.SQLException;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Topic extends BaseModel {
     private int id;
     private String name;
