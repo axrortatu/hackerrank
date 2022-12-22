@@ -3,10 +3,7 @@ package dao;
 import common.Pair;
 import model.UserProblemStatus;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +16,7 @@ public class UserProblemStatusDatabase extends BaseDatabaseConnection implements
 
         Pair<String, String> pair = new Pair<>();
 //        i_user_id bigint, i_problem integer
-        pair.put("i_telegram_chat_id := ", String.valueOf(userProblemStatus.getTelegram_chat_id()));
+        pair.put("i_chat_id := ", String.valueOf(userProblemStatus.getChatId()));
         pair.put("i_problem_id := ", String.valueOf(userProblemStatus.getProblemId()));
 
         try {
@@ -56,12 +53,46 @@ public class UserProblemStatusDatabase extends BaseDatabaseConnection implements
         }
         return null;
     }
-    public boolean isSolved(long chatId, int id){
-        List<UserProblemStatus> statuses = getObjectList();
-        for (UserProblemStatus u:statuses) {
-            if(u.getTelegram_chat_id()==chatId && u.getProblemId()==id){
-                return true;
+
+    public boolean isSolved(long chatId, int problemId){
+        List<UserProblemStatus> statuses = getUserSolvedList(chatId);
+       return binarySearchUserSolvedList(statuses,problemId);
+    }
+
+    public List<UserProblemStatus> getUserSolvedList(long chatId) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = getConnection();
+            statement = connection.prepareStatement("select * from get_user_problem_status_chat_id(?)");
+            statement.setLong(1,chatId);
+            List<UserProblemStatus> userProblemStatuses = new ArrayList<>();
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                userProblemStatuses.add(new UserProblemStatus(resultSet));
             }
+            return userProblemStatuses;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            closeConnection(connection,statement);
+        }
+        return null;
+    }
+
+    public boolean binarySearchUserSolvedList(List<UserProblemStatus> statusList, int problemID){
+        int first =0;
+        int last = statusList.size();
+        int mid = (first + last)/2;
+        while (first<=last){
+            if(statusList.get(mid).getProblemId()<problemID){
+                first=mid+1;
+            }else if(statusList.get(mid).getProblemId()==problemID){
+                return true;
+            }else {
+                last= mid -1;
+            }
+            mid = (first +last)/2;
         }
         return false;
     }
