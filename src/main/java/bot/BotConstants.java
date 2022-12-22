@@ -88,11 +88,11 @@ public interface BotConstants {
         return callBackData.startsWith(PROBLEM);
     }
 
-    default boolean isPrevOrNext(final String callBackData) {
+    default boolean isPagination(final String callBackData) {
         return callBackData.startsWith(PREV) || callBackData.startsWith(NEXT);
     }
 
-    default boolean isTopicId(String callBackData) {
+    default boolean isPreparation(String callBackData) {
         return callBackData.startsWith(TOPIC_ID);
     }
 }

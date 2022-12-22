@@ -162,13 +162,13 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
                 test(chatId, messageId, true);
                 BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
-            } else if (isPrevOrNext(callBackData)) {
+            } else if (isPagination(callBackData)) {
                 if (callBackData.startsWith(PREV)) {
                     test(chatId, messageId, true);
                 } else {
                     test(chatId, messageId, false);
                 }
-            } else if (isTopicId(callBackData)) {
+            } else if (isPreparation(callBackData)) {
                 String[] split = callBackData.split(SEPARATOR);
                 String topicId = split[OBJECTID];
                 String userPreparation = new UserPreparationDataBase().getUserPreparation(chatId, Integer.parseInt(topicId));
