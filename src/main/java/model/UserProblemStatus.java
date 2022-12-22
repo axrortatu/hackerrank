@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 public class UserProblemStatus extends BaseModel {
 
-    private Long  telegram_chat_id;
+    private Long  chatId;
     private Integer problemId;
 
     public UserProblemStatus(ResultSet resultSet) {
@@ -24,7 +24,7 @@ public class UserProblemStatus extends BaseModel {
     @Override
     protected void getList(ResultSet resultSet) {
         try {
-            this.telegram_chat_id = resultSet.getLong("telegram_chat_id");
+            this.chatId = resultSet.getLong("chat_id");
             this.problemId = resultSet.getInt("problem_id");
         } catch (SQLException e) {
             e.printStackTrace();
