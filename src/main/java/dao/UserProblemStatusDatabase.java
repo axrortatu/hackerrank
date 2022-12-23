@@ -8,8 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static bot.BotConstants.NOT_RESOLVED;
-import static bot.BotConstants.SOLVED;
+import static bot.BotConstants.*;
 
 public class UserProblemStatusDatabase extends BaseDatabaseConnection implements BaseDatabase<UserProblemStatus>{
 
@@ -44,11 +43,9 @@ public class UserProblemStatusDatabase extends BaseDatabaseConnection implements
         List<UserProblemStatus> statuses = getUserSolvedList(chatId);
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < problemList.size(); i++) {
-            if(binarySearchUserSolvedList(statuses,problemList.get(i).getId())){
-                stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append(SOLVED).append("\n");
-            }else{
-                stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append(NOT_RESOLVED).append("\n");
-            }
+                stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append(
+                        binarySearchUserSolvedList(statuses,problemList.get(i).getId())?SOLVED:UNSOLVED
+                ).append("\n");
         }
        return stringBuilder;
 

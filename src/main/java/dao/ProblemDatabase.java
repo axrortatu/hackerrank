@@ -73,10 +73,7 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
     public String getProblemInfo(String topicId, Difficulty difficulty, int pageNumber, long chatId) {
         List<Problem> problemList = getProblemByTopicId(Integer.parseInt(topicId), difficulty, pageNumber);
         UserProblemStatusDatabase statusDatabase = new UserProblemStatusDatabase();
-
         StringBuilder stringBuilder = statusDatabase.isSolved(problemList,chatId);
-
-
         return stringBuilder.toString();
     }
 }

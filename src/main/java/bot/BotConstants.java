@@ -65,7 +65,7 @@ public interface BotConstants {
     int PAGE_NUMBER = 3;
 
     String SOLVED = " ✅SOLVED";
-    String NOT_RESOLVED = " ❌NOT RESOLVED";
+    String UNSOLVED = " ❌UNSOLVED";
 
     String NEXT = "⏭";
     String PREV = "⏮";
