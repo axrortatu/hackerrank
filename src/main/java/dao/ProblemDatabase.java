@@ -73,4 +73,36 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
         StringBuilder stringBuilder = statusDatabase.isSolved(problemList,chatId);
         return stringBuilder.toString();
     }
+    public String getSolvedProblems(Long chat_id, int topic_id, boolean status) {
+        List<Problem> problemList = getSolved(chat_id, topic_id, status);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < problemList.size(); i++) {
+            stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append(" (").append(problemList.get(i).getDifficulty()).append(")").append("\n");
+        }
+        return stringBuilder.toString();
+    }
+
+    public List<Problem> getSolved(Long chatId, int topic_id, boolean status) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = getConnection();
+            preparedStatement = connection.prepareStatement("select * from get_topic_problems(?,?,?,?,?,?)");
+            preparedStatement.setInt(1, topic_id);
+            preparedStatement.setString(2, null);
+            preparedStatement.setInt(3, 1);
+            preparedStatement.setLong(4, chatId);
+            preparedStatement.setInt(5, 0);
+            preparedStatement.setBoolean(6, status);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ArrayList<Problem> problems = new ArrayList<>();
+            while (resultSet.next()) {
+                problems.add(new Problem(resultSet));
+            }
+            return problems;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
