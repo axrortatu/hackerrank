@@ -175,13 +175,13 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 }
             } else if (isProblem(callBackData)) {
                 pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
-                test(chatId, messageId, true);
+                checkPagination(chatId, messageId, true);
                 BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
             } else if (isPagination(callBackData)) {
                 if (callBackData.startsWith(PREV)) {
-                    test(chatId, messageId, true);
+                    checkPagination(chatId, messageId, true);
                 } else {
-                    test(chatId, messageId, false);
+                    checkPagination(chatId, messageId, false);
                 }
             } else if (isPreparation(callBackData)) {
                 String[] split = callBackData.split(SEPARATOR);
@@ -232,7 +232,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         }
     }
 
-    private void test(Long chatId, int messageId, boolean isPrev) {
+    private void checkPagination(Long chatId, int messageId, boolean isPrev) {
 
         String[] split = pageNumberList.get(chatId).split(SEPARATOR);
         String topicId = split[OBJECTID];
@@ -247,7 +247,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         if (!isPrev) {
             page++;
         }
-
         ProblemDatabase problemDatabase = new ProblemDatabase();
         String problemListInfo = problemDatabase.getProblemInfo(topicId, Difficulty.valueOf(difficulty), page, chatId);
         List<Problem> problemList = problemDatabase.getProblemByTopicId(

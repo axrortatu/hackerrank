@@ -33,14 +33,16 @@ public class QuestionDatabase extends BaseDatabaseConnection implements BaseData
         PreparedStatement statement = null;
         try {
             connection = getConnection();
-            statement = connection.prepareStatement("select * from add_question(?,?,?,?,?,?,?)");
+            statement = connection.prepareStatement("select * from add_question(?,?,?,?,?,?,?,?,?)");
             statement.setInt(1, question.getProblemId());
             statement.setString(2, question.getType());
             statement.setInt(3, question.getOrder());
             statement.setBytes(4, attachmentContent.getContent());
             statement.setString(5, question.getDescription());
-            statement.setString(6, question.getType());
-            statement.setLong(7, attachment.getSize());
+            statement.setString(6, question.getDescriptionUzb());
+            statement.setString(7, question.getDescriptionRus());
+            statement.setString(8, question.getType());
+            statement.setLong(9, attachment.getSize());
 
             ResultSet resultSet = statement.executeQuery();
 
