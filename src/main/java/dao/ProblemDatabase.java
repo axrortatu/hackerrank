@@ -2,14 +2,11 @@ package dao;
 
 import model.Difficulty;
 import model.Problem;
-import model.UserProblemStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static bot.BotConstants.NOT_RESOLVED;
-import static bot.BotConstants.SOLVED;
 
 public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatabase<Problem> {
 
