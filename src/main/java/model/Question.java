@@ -18,6 +18,9 @@ private int problemId;
 private int attachmentId;
 private String type;
 private int order;
+private String descriptionUzb;
+
+private String descriptionRus;
 
     public Question(ResultSet resultSet) {
         this.getList(resultSet);
@@ -28,6 +31,8 @@ private int order;
         try {
             this.id = resultSet.getInt("id");
             this.description = resultSet.getString("description");
+            this.descriptionUzb = resultSet.getString("description_uzb");
+            this.descriptionRus = resultSet.getString("description_rus");
             this.problemId = resultSet.getInt("problem_id");
             this.attachmentId =  resultSet.getInt("attachment_id");
             this.type = resultSet.getString("type");

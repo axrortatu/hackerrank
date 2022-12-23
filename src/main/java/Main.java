@@ -1,15 +1,13 @@
 import botjson.BotUserJson;
 import bot.utils.BotUtils;
+
+import bot.utils.FilesUtil;
 import dao.QuestionDatabase;
 import dao.TopicDatabase;
 import model.*;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -42,30 +40,30 @@ public class Main {
                     Question question = new Question();
                     Attachment attachment = new Attachment();
                     AttachmentContent attachmentContent = new AttachmentContent();
+
                     System.out.print("Problem id ni kiriting: ");
                     question.setProblemId(BotUtils.numberScan.nextInt());
                     System.out.println("Savol turini tanlang (1-image/2-text): ");
                     int number = BotUtils.numberScan.nextInt();
                     if (number == 1) {
                         question.setType("IMAGE");
-                        try {
                             System.out.println("File urlini kiriting:  ");
                             String file = BotUtils.textScan.nextLine();
                             System.out.println("Fileni nomini kiriting: ");
                             attachment.setFileName(BotUtils.textScan.nextLine());
-                            FileInputStream fileInputStream = new FileInputStream(file + "/" + attachment.getFileName());
-                            byte[] bytes = fileInputStream.readAllBytes();
-                            attachmentContent.setContent(bytes);
-                            File file1 = new File(file + "/" + attachment.getFileName());
-                            attachment.setSize(file1.getFreeSpace());
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                            attachmentContent.setContent(FilesUtil.getBytes(attachment.getFileName(),file));
 
-                    } else if (number == 2) {
+                           attachment.setSize(attachmentContent.getContent().length/1024);
+                        System.out.println(attachmentContent.getContent().length);
+                    }
+                    else if (number == 2) {
                         question.setType("TEXT");
-                        System.out.println("Savolni matini  kiriting: ");
+                        System.out.println("Savolni matini  kiriting (Eng): ");
                         question.setDescription(BotUtils.textScan.nextLine());
+                        System.out.println("Savolni matini  kiriting (Uzb): ");
+                        question.setDescriptionUzb(BotUtils.textScan.nextLine());
+                        System.out.println("Savolni matini  kiriting (Rus): ");
+                        question.setDescriptionRus(BotUtils.textScan.nextLine());
                     } else {
                         System.out.println("Xato raqam kiritildi");
                     }
@@ -75,5 +73,7 @@ public class Main {
                 }
             }
         }
+        }
     }
-}
+
+

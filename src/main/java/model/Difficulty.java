@@ -4,5 +4,7 @@ public enum Difficulty {
    EASY,
     MEDIUM,
     HARD,
-    ALL
+    ALL,
+    SOLVED,
+    UNSOLVED
 }

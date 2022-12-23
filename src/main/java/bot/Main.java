@@ -18,9 +18,6 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-
 import java.util.*;
 
 
@@ -51,16 +48,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
             Long CHAT_ID = message.getChatId();
 
             if (message.hasContact()){
-                Contact contact = message.getContact();
-                User user = new User();
-                user.setName(contact.getFirstName()+
-                        ((contact.getLastName()!=null)?"  "+contact.getLastName():""));
-                user.setUsername(message.getFrom().getUserName());
-                user.setChatId(message.getChatId());
-                UserDatabase userDatabase = new UserDatabase();
-                userDatabase.addObject(user);
-
-                sendAfterStart(CHAT_ID);
+                addNewUser(message);
             }
 
             if (TEXT.equals(START)) {
@@ -147,15 +135,53 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                         inlineKeyboardMarkup
                 );
                 botExecute(MessageType.EDIT_MESSAGE, editMessageText);
+            } else if (isProblemSolvedOrUnsolved(callBackData)) {
+                Long CHAT_ID = callBackMessage.getChatId();
+                String topic_id = callBackData.substring(8,9);
+                Integer messageId1 = callBackMessage.getMessageId();
+                ProblemDatabase problemDatabase = new ProblemDatabase();
+                if (callBackData.contains(UNSOLVED)) {
+                    String problemSolved = problemDatabase.getSolvedProblems(chatId, Integer.parseInt(topic_id), false);
+                    List<Problem> problemList = problemDatabase.getSolved(
+                            chatId,
+                            Integer.parseInt(topic_id),
+                            false);
+                    InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(new ArrayList<>(problemList),3);
+                    EditMessageText editMessageText = BotUtils.buildEditMessage(
+                            CHAT_ID,problemSolved,messageId1,inlineKeyboardMarkup
+                    );
+                    botExecute(MessageType.EDIT_MESSAGE,editMessageText);
+                } else if (callBackData.contains(SOLVED)) {
+                    String problemSolved = problemDatabase.getSolvedProblems(chatId, Integer.parseInt(topic_id), true);
+                    List<Problem> problemList = problemDatabase.getSolved(
+                            chatId,
+                            Integer.parseInt(topic_id),
+                            true);
+                    InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(new ArrayList<>(problemList),3);
+                    EditMessageText editMessageText = BotUtils.buildEditMessage(
+                            CHAT_ID,problemSolved,messageId1,inlineKeyboardMarkup
+                    );
+                    botExecute(MessageType.EDIT_MESSAGE, editMessageText);
+                } else if (isProblem(callBackData)) {
+                    pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
+                    test(chatId, messageId, true);
+                    BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
+                } else if (isPagination(callBackData)) {
+                    if (callBackData.startsWith(PREV)) {
+                        test(chatId, messageId, true);
+                    } else {
+                        test(chatId, messageId, false);
+                    }
+                }
             } else if (isProblem(callBackData)) {
                 pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
-                test(chatId, messageId, true);
+                checkPagination(chatId, messageId, true);
                 BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
             } else if (isPagination(callBackData)) {
                 if (callBackData.startsWith(PREV)) {
-                    test(chatId, messageId, true);
+                    checkPagination(chatId, messageId, true);
                 } else {
-                    test(chatId, messageId, false);
+                    checkPagination(chatId, messageId, false);
                 }
             } else if (isPreparation(callBackData)) {
                 String[] split = callBackData.split(SEPARATOR);
@@ -191,7 +217,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 BotUtils.buildReplyMarkup(List.of(UZB, RUS, ENG), 2, false)
         );
         botExecute(MessageType.SEND_MESSAGE, sendMessage);
-    }
+        }
 
     private void botExecute(MessageType messageType, Object object) {
         try {
@@ -206,7 +232,7 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         }
     }
 
-    private void test(Long chatId, int messageId, boolean isPrev) {
+    private void checkPagination(Long chatId, int messageId, boolean isPrev) {
 
         String[] split = pageNumberList.get(chatId).split(SEPARATOR);
         String topicId = split[OBJECTID];
@@ -221,7 +247,6 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         if (!isPrev) {
             page++;
         }
-
         ProblemDatabase problemDatabase = new ProblemDatabase();
         String problemListInfo = problemDatabase.getProblemInfo(topicId, Difficulty.valueOf(difficulty), page, chatId);
         List<Problem> problemList = problemDatabase.getProblemByTopicId(
@@ -239,6 +264,18 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
 
         pageNumberList.put(chatId, (PREV + SEPARATOR + topicId + SEPARATOR + difficulty + SEPARATOR + page));
         botExecute(MessageType.EDIT_MESSAGE, editMessageText);
+    }
+    private void addNewUser(Message message) {
+        Contact contact = message.getContact();
+        User user = new User();
+        user.setName(contact.getFirstName()+
+                     ((contact.getLastName()!=null)?"  "+contact.getLastName():""));
+        user.setUsername(message.getFrom().getUserName());
+        user.setChatId(message.getChatId());
+        UserDatabase userDatabase = new UserDatabase();
+        userDatabase.addObject(user);
+
+        sendAfterStart(message.getChatId());
     }
 
 
