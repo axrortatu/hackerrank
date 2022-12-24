@@ -18,6 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+
 import java.util.*;
 
 
@@ -164,13 +165,13 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                     botExecute(MessageType.EDIT_MESSAGE, editMessageText);
                 } else if (isProblem(callBackData)) {
                     pageNumberList.put(callBackMessage.getChatId(), callBackData.replace(PROBLEM, PREV));
-                    test(chatId, messageId, true);
+                    checkPagination(chatId, messageId, true);
                     BotConstants.ADMIN_SEND_QUESTION_CONTENT.put(chatId, BotConstants.ADMIN_SEND_QUESTION);
                 } else if (isPagination(callBackData)) {
                     if (callBackData.startsWith(PREV)) {
-                        test(chatId, messageId, true);
+                        checkPagination(chatId, messageId, true);
                     } else {
-                        test(chatId, messageId, false);
+                        checkPagination(chatId, messageId, false);
                     }
                 }
             } else if (isProblem(callBackData)) {
