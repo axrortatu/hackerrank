@@ -142,9 +142,9 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                 Integer messageId1 = callBackMessage.getMessageId();
                 ProblemDatabase problemDatabase = new ProblemDatabase();
                 if (callBackData.contains(UNSOLVED)) {
-                    String problemSolved = problemDatabase.getSolvedProblems(100L, Integer.parseInt(topic_id), false);
+                    String problemSolved = problemDatabase.getSolvedProblems(chatId, Integer.parseInt(topic_id), false);
                     List<Problem> problemList = problemDatabase.getSolved(
-                            100L,
+                            chatId,
                             Integer.parseInt(topic_id),
                             false);
                     InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(new ArrayList<>(problemList),3);
@@ -153,9 +153,9 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
                     );
                     botExecute(MessageType.EDIT_MESSAGE,editMessageText);
                 } else if (callBackData.contains(SOLVED)) {
-                    String problemSolved = problemDatabase.getSolvedProblems(100L, Integer.parseInt(topic_id), true);
+                    String problemSolved = problemDatabase.getSolvedProblems(chatId, Integer.parseInt(topic_id), true);
                     List<Problem> problemList = problemDatabase.getSolved(
-                            100L,
+                            chatId,
                             Integer.parseInt(topic_id),
                             true);
                     InlineKeyboardMarkup inlineKeyboardMarkup = BotUtils.buildInlineMarkup(new ArrayList<>(problemList),3);
