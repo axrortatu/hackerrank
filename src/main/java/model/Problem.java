@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 
 @ToString
 public class Problem extends BaseModel {

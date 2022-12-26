@@ -2,6 +2,7 @@ import botjson.BotUserJson;
 import bot.utils.BotUtils;
 
 import bot.utils.FilesUtil;
+import dao.ProblemDatabase;
 import dao.QuestionDatabase;
 import dao.TopicDatabase;
 import model.*;
@@ -70,6 +71,30 @@ public class Main {
                     System.out.println("Savol orderini kiriting: ");
                     question.setOrder(BotUtils.numberScan.nextInt());
                     System.out.println(new QuestionDatabase().addObjectStange(question, attachmentContent, attachment));
+                }
+                case 3 -> {
+                    Problem problem = new Problem();
+                    ProblemDatabase sendToUser = new ProblemDatabase();
+
+                    System.out.println("Enter topic id");
+                    problem.setTopicId(scanner.nextInt());
+
+                    System.out.println("Enter problem name");
+                    problem.setName(scannerStr.nextLine());
+
+                    System.out.println("Enter difficulty name");
+                    problem.setDifficulty(Difficulty.valueOf(scannerStr.nextLine()));
+
+                    System.out.println("Enter setSubDomainId name");
+                    problem.setSubDomainId(scanner.nextInt());
+
+                    if(sendToUser.addObject(problem)){
+                        bot.Main sendProblem = new bot.Main();
+                        sendProblem.setUserNewProblem(problem);
+                        System.out.println("user add");
+                    }else {
+                        System.err.println("user add error");
+                    }
                 }
             }
         }

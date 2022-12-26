@@ -44,7 +44,9 @@ public class UserProblemStatusDatabase extends BaseDatabaseConnection implements
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < problemList.size(); i++) {
                 stringBuilder.append(i + 1).append(". ").append(problemList.get(i).getName()).append(
-                        binarySearchUserSolvedList(statuses,problemList.get(i).getId())?SOLVED:UNSOLVED
+                        statuses.size()==0?UNSOLVED:
+                        binarySearchUserSolvedList(statuses,problemList.get(i).getId())
+                                ?SOLVED:UNSOLVED
                 ).append("\n");
         }
        return stringBuilder;
@@ -75,7 +77,7 @@ public class UserProblemStatusDatabase extends BaseDatabaseConnection implements
     public boolean binarySearchUserSolvedList(List<UserProblemStatus> statusList, int problemID){
         int first =0;
         int last = statusList.size();
-        if(statusList.get(last-1).getProblemId()<problemID ||
+        if(statusList.size()==0 || statusList.get(last-1).getProblemId()<problemID ||
                 statusList.get(0).getProblemId()>problemID
         ){
             return false;

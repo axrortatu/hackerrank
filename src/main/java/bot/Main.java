@@ -18,6 +18,8 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import java.util.*;
 
 
@@ -278,5 +280,22 @@ public class Main extends TelegramLongPollingBot implements BotConstants {
         sendAfterStart(message.getChatId());
     }
 
+    public void setUserNewProblem(Problem problem) {
+        UserDatabase users = new UserDatabase();
+        List<User> usersList = users.getObjectList();
+        SendMessage sendMessage = new SendMessage();
+        int userSize = usersList.size();
 
+        for (User user :usersList) {
+            sendMessage.setText(problem.getTopicId()+"\n"+ problem.getName()+ "\n" + problem.getDifficulty());
+            sendMessage.setChatId(user.getChatId());
+            try {
+                execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+
+            }
+        }
+
+    }
 }

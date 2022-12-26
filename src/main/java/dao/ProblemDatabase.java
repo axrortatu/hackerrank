@@ -3,6 +3,7 @@ package dao;
 import model.Difficulty;
 import model.Problem;
 
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,24 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
 
     @Override
     public boolean addObject(Problem problem) {
+        try (
+                Connection  connection =  getConnection();
+                PreparedStatement  statement = connection.prepareStatement("select add_problem(?,?,?,?)");
+                ){
+            statement.setString(1,problem.getName());
+            statement.setString(2, String.valueOf(problem.getDifficulty()));
+            statement.setInt(3, problem.getSubDomainId());
+            statement.setInt(4,problem.getTopicId());
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            return resultSet.getBoolean(1);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
     }
+
 
     @Override
     public List<Problem> getObjectList() {
@@ -23,7 +40,7 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
             connection = getConnection();
             statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery("select * from get_topic_problems");
+            ResultSet resultSet = statement.executeQuery("select * from get_topic_problems()");
             ArrayList<Problem> problemList = new ArrayList<>();
             while (resultSet.next()) {
                 problemList.add(new Problem(resultSet));
@@ -105,4 +122,7 @@ public class ProblemDatabase extends BaseDatabaseConnection implements BaseDatab
             throw new RuntimeException(e);
         }
     }
+
+
+
 }
